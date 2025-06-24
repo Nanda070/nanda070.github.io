@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Nanda’s Terminal Portfolio - Web Dev 2025 Capstone" />
+  <meta property="og:title" content="Nanda's Terminal Portfolio" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://i.imgur.com/CtQKF9Z.gif" />
+  <meta property="og:url" content="https://nanda070.github.io/terminal-portfolio/" />
+  <title>Nanda’s Terminal Portfolio</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+  <style>
+    body {{ background-color: #000; color: #0f0; font-family: 'Fira Code', monospace; }}
+    .cursor::after {{ content: '_'; animation: blink 1s steps(2, start) infinite; }}
+    @keyframes blink {{ 50% {{ opacity: 0; }} }}
+  </style>
+</head>
+<body class="p-6">
+
+<h2 class="text-3xl font-semibold mb-4" data-aos="fade-right">Projects</h2>
+<div id="projects" class="grid gap-4"></div>
+<script>
+  fetch("https://api.github.com/users/nanda070/repos")
+    .then(res => res.json())
+    .then(repos => {
+      const container = document.getElementById("projects");
+      repos.forEach(repo => {
+        const el = document.createElement("div");
+        el.className = "border p-4 rounded-md hover:bg-gray-900 transition";
+        el.innerHTML = `
+          <h3 class="text-xl font-bold">${repo.name}</h3>
+          <p>${repo.description || "No description."}</p>
+          <a href="${repo.html_url}" target="_blank" class="text-blue-400 underline">View on GitHub</a>
+        `;
+        container.appendChild(el);
+      });
+    });
+</script>
+
+<footer class="mt-12 text-sm text-gray-500">
+  <p>© 2025 Nanda. Built for Web Dev Capstone.</p>
+</footer>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>AOS.init();</script>
+</body></html>
