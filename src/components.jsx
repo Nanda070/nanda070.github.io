@@ -274,3 +274,100 @@ export const CommandPalette = ({ isOpen, setOpen }) => {
     </div>
   );
 };
+
+// ... предыдущий код файла components.jsx ...
+import { Search, MapPin, Crosshair, Network, FileKey } from 'lucide-react';
+
+export const OsintScanner = () => {
+  const [target, setTarget] = useState('');
+  const [scanning, setScanning] = useState(false);
+  const [results, setResults] = useState(null);
+  const [logs, setLogs] = useState([]);
+
+  const startScan = (e) => {
+    e.preventDefault();
+    if (!target.trim() || scanning) return;
+    setScanning(true);
+    setResults(null);
+    setLogs([]);
+
+    const steps = [
+      `[INIT] Target lock: ${target}`,
+      '[SEARCH] Querying Telegram DB...',
+      '[SEARCH] Parsing GitHub commits...',
+      '[EXTRACT] Cross-referencing Discord IDs...',
+      '[ANALYZE] Resolving historical IPs...',
+      '[DONE] Payload compiled.'
+    ];
+
+    let stepIdx = 0;
+    const interval = setInterval(() => {
+      if (stepIdx < steps.length) {
+        setLogs(prev => [...prev, steps[stepIdx]]);
+        stepIdx++;
+      } else {
+        clearInterval(interval);
+        setScanning(false);
+        setResults({
+          alias: target,
+          confidence: '94%',
+          lastIp: `192.${Math.floor(Math.random()*255)}.x.x`,
+          breaches: Math.floor(Math.random() * 5) + 1,
+          tgId: Math.floor(Math.random() * 9000000000) + 1000000000
+        });
+      }
+    }, 600);
+  };
+
+  return (
+    <div className="bg-[#050505] border border-white/10 p-6 flex flex-col h-[400px] relative overflow-hidden">
+      {scanning && <div className="absolute top-0 left-0 w-full h-1 bg-red-600 animate-pulse"></div>}
+      <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-6 border-b border-white/5 pb-2 flex justify-between">
+        <span className="flex items-center gap-2"><Crosshair size={14}/> OSINT_DATA_AGGREGATOR</span>
+        <span className={scanning ? 'text-red-500 animate-pulse' : 'text-green-500'}>{scanning ? 'SCANNING' : 'STANDBY'}</span>
+      </div>
+
+      <form onSubmit={startScan} className="flex gap-2 mb-6 relative z-10">
+        <div className="relative flex-1">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+          <input 
+            type="text" 
+            value={target}
+            onChange={(e) => setTarget(e.target.value)}
+            disabled={scanning}
+            placeholder="Enter Alias, Email, or IP..." 
+            className="w-full bg-[#000000] border border-white/10 p-3 pl-9 text-xs text-white focus:border-red-500 focus:outline-none transition-colors font-mono disabled:opacity-50"
+          />
+        </div>
+        <button disabled={scanning} className="bg-red-900/20 border border-red-500/30 text-red-500 px-6 font-bold text-xs hover:bg-red-500 hover:text-black transition-colors disabled:opacity-50 tracking-widest">
+          TRACE
+        </button>
+      </form>
+
+      <div className="grid grid-cols-2 gap-6 flex-1 min-h-0">
+        {/* LOGS */}
+        <div className="bg-[#000000] border border-white/10 p-4 font-mono text-[10px] overflow-y-auto space-y-1">
+          {logs.map((log, i) => (
+             <div key={i} className={log.includes('[DONE]') ? 'text-green-400 font-bold' : 'text-gray-400'}>{log}</div>
+          ))}
+          {scanning && <div className="text-red-500 animate-pulse">...</div>}
+        </div>
+
+        {/* RESULTS */}
+        <div className="bg-[#000000] border border-white/10 p-4 font-mono text-xs flex flex-col justify-center relative">
+          {!results && !scanning && <div className="text-gray-600 text-center text-[10px]">AWAITING TARGET INPUT</div>}
+          {scanning && <div className="absolute inset-0 flex items-center justify-center"><Network size={32} className="text-red-500/30 animate-spin" /></div>}
+          {results && (
+             <div className="space-y-3 animate-in fade-in duration-300">
+                <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-gray-500">TARGET</span><span className="text-white font-bold">{results.alias}</span></div>
+                <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-gray-500">CONFIDENCE</span><span className="text-green-500 font-bold">{results.confidence}</span></div>
+                <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-gray-500">LAST_KNOWN_IP</span><span className="text-white flex items-center gap-1"><MapPin size={10}/> {results.lastIp}</span></div>
+                <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-gray-500">TG_ID</span><span className="text-white">{results.tgId}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">DB_BREACHES</span><span className="text-red-400 font-bold flex items-center gap-1"><FileKey size={10}/> {results.breaches} FOUND</span></div>
+             </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
