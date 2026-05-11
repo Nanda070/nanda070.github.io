@@ -2,18 +2,20 @@ import React, { useState, useEffect, useRef } from 'react';
 import { HashRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { 
   TerminalSquare, ShieldAlert, Cpu, X, Database, 
-  Activity, Server, Lock, Command, Layers, Network, Zap
+  Activity, Server, Lock, Command, Layers, Network, Zap, 
+  Globe, BarChart, Code2, Terminal as TerminalIcon
 } from 'lucide-react';
 
-// --- DATABASE ---
+// --- DATA ---
 const BOOT_LOGS = [
   "[OK] Booting System Kernel 5.15.0-generic...",
   "[OK] Mount root filesystem... DONE",
   "[OK] Initialize network interfaces... eth0 UP",
   "[OK] Starting SSH daemon... PORT 22 SECURED",
   "[OK] Loading cryptography modules... AES-256 ACTIVE",
+  "[OK] Establishing link to backend clusters... OK",
   "[OK] Fetching user profile: ADNAN... SUCCESS",
-  "[!!] INITIATING FRONTEND TERMINAL_UI..."
+  "[!!] INITIATING FRONTEND TERMINAL_UI COMPOSITOR..."
 ];
 
 const SYSTEM_METRICS = [
@@ -24,34 +26,34 @@ const SYSTEM_METRICS = [
 ];
 
 const TECH_MATRIX = [
-  { group: 'BACKEND_CORE', items: ['Python 3.11', 'FastAPI', 'Node.js', 'Java 17'] },
-  { group: 'INFRASTRUCTURE', items: ['Debian/Ubuntu', 'Docker', 'tmux', 'Nginx'] },
+  { group: 'BACKEND_CORE', items: ['Python 3.11', 'FastAPI', 'Node.js', 'Java 17', 'C# / .NET'] },
+  { group: 'INFRASTRUCTURE', items: ['Debian/Ubuntu', 'Docker', 'tmux', 'Nginx', 'CI/CD'] },
   { group: 'DATABASES', items: ['PostgreSQL', 'Redis', 'MongoDB', 'SQLite'] },
-  { group: 'APIs & MODS', items: ['discord.py', 'Spigot API', 'PaperMC', 'REST API'] }
+  { group: 'APIs & MODS', items: ['discord.py', 'Spigot API', 'PaperMC', 'REST', 'WebSockets'] }
 ];
 
 const TIMELINE = [
-  { date: 'RUNTIME: CURRENT', title: 'LIFE5RP Ecosystem Synchronization', desc: 'Перевод архитектуры на slash-команды. Синхронизация ролей с удалением деструктивных функций (auto-kick).' },
-  { date: 'RUNTIME: PREVIOUS', title: 'AstraSMP Core Infrastructure', desc: 'Модификация Java-исходников для серверов Minecraft. Внедрение Whitelist и интеграция Voice Chat.' },
-  { date: 'ARCHIVE', title: 'Department Auth System', desc: 'Проектирование логики генерации секьюрных токенов. Рефакторинг форм авторизации.' }
+  { date: 'RUNTIME: CURRENT', title: 'LIFE5RP Ecosystem System Core', desc: 'Архитектура slash-команд. Изолированная синхронизация стейта пользователей. Автоматизация выдачи токенов без ручного вмешательства.' },
+  { date: 'RUNTIME: PREVIOUS', title: 'AstraSMP Server Architecture', desc: 'Глубокая модификация Java-кода (Bukkit/Spigot). Реализация кастомных эвентов, настройка Voice Chat и системы Whitelist.' },
+  { date: 'ARCHIVE', title: 'Security Audit & OSINT Tools', desc: 'Разработка парсеров и ботов для мониторинга действий. Автоматический сбор логов и выявление аномалий в сети.' }
 ];
 
 const PROJECTS = [
   { id: 'PRJ-ALPHA', name: 'RoleSync Daemon', type: 'Discord.py / Asyncio', desc: 'Автоматизированный демон для LIFE5RP. Отслеживание изменений стейта пользователей и зеркалирование ролей.', icon: <Command size={28} /> },
   { id: 'PRJ-BETA', name: 'AstraSMP Controller', type: 'Java / Bukkit API', desc: 'Плагин управления ядром сервера. Оптимизация нагрузки на основной поток (Main Thread).', icon: <Database size={28} /> },
   { id: 'PRJ-GAMMA', name: 'Security Audit', type: 'Python / PostgreSQL', desc: 'Система логирования действий администраторов. Автоматическое формирование репортов.', icon: <ShieldAlert size={28} /> },
-  { id: 'PRJ-DELTA', name: 'Token Generator', type: 'Cryptography Core', desc: 'Генерация уникальных идентификаторов для авторизации департаментов.', icon: <Lock size={28} /> }
+  { id: 'PRJ-DELTA', name: 'Token Generator', type: 'Cryptography Core', desc: 'Генерация уникальных идентификаторов для авторизации департаментов.', icon: <Lock size={28} /> },
+  { id: 'PRJ-EPSILON', name: 'Custom Launcher', type: 'C# / .NET', desc: 'Нативное приложение для автоматизации запуска и обновления клиентских файлов.', icon: <Code2 size={28} /> },
+  { id: 'PRJ-ZETA', name: 'Net Monitor', type: 'Node.js / React', desc: 'Дашборд для визуализации сетевой активности и нагрузки на Docker контейнеры.', icon: <Globe size={28} /> }
 ];
 
-// --- UTILS ---
+// --- UTILS & COMPONENTS ---
 const useTypewriter = (text, speed = 20) => {
   const [displayText, setDisplayText] = useState('');
   useEffect(() => {
-    let i = 0;
-    setDisplayText('');
+    let i = 0; setDisplayText('');
     const typing = setInterval(() => {
-      setDisplayText(text.substring(0, i));
-      i++;
+      setDisplayText(text.substring(0, i)); i++;
       if (i > text.length) clearInterval(typing);
     }, speed);
     return () => clearInterval(typing);
@@ -63,9 +65,50 @@ const Scanlines = () => (
   <div className="pointer-events-none fixed inset-0 z-[100] opacity-10 mix-blend-overlay bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%]"></div>
 );
 
-// --- PAGES COMPONENT MODULES ---
+// Анимированный график нагрузки (CPU/RAM)
+const LiveGraph = () => {
+  const [bars, setBars] = useState(Array.from({ length: 40 }, () => Math.random() * 100));
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBars(prev => [...prev.slice(1), Math.random() * 100]);
+    }, 200);
+    return () => clearInterval(interval);
+  }, []);
 
-const Dashboard = () => {
+  return (
+    <div className="h-24 flex items-end gap-[2px] opacity-70">
+      {bars.map((h, i) => (
+        <div key={i} className="flex-1 bg-green-500 transition-all duration-200" style={{ height: `${h}%`, opacity: h / 100 }} />
+      ))}
+    </div>
+  );
+};
+
+// Бесконечный поток логов
+const LiveLogs = () => {
+  const [logs, setLogs] = useState([]);
+  const logRef = useRef(null);
+  const IPS = ['192.168.1.1', '10.0.0.5', '172.16.254.1', '45.33.22.11'];
+  const ACTIONS = ['POST /api/sync', 'GET /health', 'AUTH_ATTEMPT', 'CRON_JOB_EXEC'];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newLog = `[${new Date().toISOString()}] ${IPS[Math.floor(Math.random()*IPS.length)]} - ${ACTIONS[Math.floor(Math.random()*ACTIONS.length)]} - STATUS: OK`;
+      setLogs(prev => [...prev.slice(-14), newLog]); // Храним последние 15
+    }, 800);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="font-mono text-[9px] text-green-500/50 space-y-1 h-[180px] overflow-hidden flex flex-col justify-end">
+      {logs.map((log, i) => <div key={i}>{log}</div>)}
+    </div>
+  );
+};
+
+// --- PAGES ---
+
+const Dashboard = ({ setIsBooting }) => {
   const heroText = useTypewriter("> ACCESS GRANTED.\n> ROOT_USER DETECTED.\n> SYSTEM AWAITING INPUT...", 30);
   const [cliInput, setCliInput] = useState('');
   const [cliHistory, setCliHistory] = useState([{ type: 'system', text: 'Type "help" for available commands.' }]);
@@ -78,11 +121,40 @@ const Dashboard = () => {
     const newHistory = [...cliHistory, { type: 'user', text: `root@adnan:~# ${cliInput}` }];
     
     switch(cmd) {
-      case 'help': newHistory.push({ type: 'system', text: 'Commands: help, status, whoami, clear' }); break;
-      case 'whoami': newHistory.push({ type: 'system', text: 'Adnan. System Engineer & DevOps.' }); break;
-      case 'status': newHistory.push({ type: 'system', text: 'All clusters operational. No network anomalies detected.' }); break;
-      case 'clear': setCliHistory([]); setCliInput(''); return;
-      default: newHistory.push({ type: 'error', text: `bash: ${cmd}: command not found` });
+      case 'help': 
+        newHistory.push({ type: 'system', text: 'Commands: help, status, whoami, neofetch, ping, reboot, sudo, clear' }); 
+        break;
+      case 'whoami': 
+        newHistory.push({ type: 'system', text: 'Adnan. System Engineer & DevOps.' }); 
+        break;
+      case 'neofetch':
+        newHistory.push({ type: 'system', text: `
+   /\\   | OS: Ubuntu 24.04 LTS (Simulated)
+  /  \\  | Kernel: 5.15.0-generic
+ /____\\ | Uptime: 99.99%
+/      \\| Packages: 1402 (dpkg)
+        | Shell: bash 5.1.16
+        | Dev: Adnan / System Architect
+        ` });
+        break;
+      case 'ping':
+        newHistory.push({ type: 'system', text: 'Pinging main cluster... 12ms. OK.' });
+        break;
+      case 'sudo':
+        newHistory.push({ type: 'error', text: 'adnan is not in the sudoers file. This incident will be reported.' });
+        break;
+      case 'reboot':
+        setIsBooting(true);
+        return;
+      case 'status': 
+        newHistory.push({ type: 'system', text: 'All clusters operational. No network anomalies detected.' }); 
+        break;
+      case 'clear': 
+        setCliHistory([]); 
+        setCliInput(''); 
+        return;
+      default: 
+        newHistory.push({ type: 'error', text: `bash: ${cmd}: command not found` });
     }
     setCliHistory(newHistory);
     setCliInput('');
@@ -98,17 +170,20 @@ const Dashboard = () => {
             {heroText}<span className="animate-pulse text-white">_</span>
           </div>
           <h1 className="text-6xl md:text-8xl font-black text-white mb-6 tracking-tighter uppercase leading-[0.9]">
-            Network <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-green-600 to-emerald-900">Architect</span>
+            System <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-green-600 to-emerald-900">Overlord</span>
           </h1>
           <p className="max-w-2xl text-lg text-gray-500 border-l-2 border-green-500/40 pl-6 py-2 leading-relaxed">
-            Проектирование систем, разработка асинхронных ботов и серверных модификаций. Модульный подход, фокус на отказоустойчивости инфраструктуры.
+            Разработка отказоустойчивой серверной инфраструктуры, автоматизация процессов и глубокая модификация платформ. Контроль на всех уровнях: от ядра до интерфейса.
           </p>
         </section>
       </div>
 
       <div className="xl:col-span-4 space-y-8">
         <div className="border border-green-900/30 bg-[#050505] p-6">
-          <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-6 border-b border-white/5 pb-2">Cluster_Status</div>
+          <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-6 border-b border-white/5 pb-2 flex justify-between">
+            <span>Cluster_Status</span>
+            <span className="text-green-500 animate-pulse">ONLINE</span>
+          </div>
           <div className="space-y-4">
             {SYSTEM_METRICS.map((metric, idx) => (
               <div key={idx} className="flex justify-between items-center group">
@@ -122,11 +197,12 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="border border-white/10 bg-[#000000] flex flex-col h-[350px]">
+        {/* Интерактивный терминал */}
+        <div className="border border-white/10 bg-[#000000] flex flex-col h-[400px]">
           <div className="bg-[#050505] p-3 border-b border-white/10 flex justify-between items-center">
             <span className="text-[10px] text-green-500 font-bold tracking-widest">tty1 - interactive</span>
           </div>
-          <div className="p-4 flex-1 overflow-y-auto text-xs space-y-2 scrollbar-hide">
+          <div className="p-4 flex-1 overflow-y-auto text-xs space-y-2 scrollbar-hide whitespace-pre-wrap">
             {cliHistory.map((line, i) => (
               <div key={i} className={`${line.type === 'error' ? 'text-red-400' : line.type === 'user' ? 'text-white' : 'text-gray-400'}`}>
                 {line.text}
@@ -153,15 +229,18 @@ const Infrastructure = () => (
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/5 border border-white/5">
         {TECH_MATRIX.map((col, idx) => (
-          <div key={idx} className="bg-[#050505] p-8 hover:bg-[#080808] transition-colors">
-            <div className="text-[10px] text-green-500 font-bold tracking-[0.2em] mb-6 uppercase">{col.group}</div>
-            <ul className="space-y-3">
-              {col.items.map((item, i) => (
-                <li key={i} className="text-sm text-gray-400 flex items-center gap-2">
-                  <span className="text-green-900 text-xs">/</span> {item}
-                </li>
-              ))}
-            </ul>
+          <div key={idx} className="bg-[#050505] p-8 hover:bg-[#080808] transition-colors relative overflow-hidden group">
+            <div className="absolute inset-0 bg-green-500/5 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500"></div>
+            <div className="relative z-10">
+              <div className="text-[10px] text-green-500 font-bold tracking-[0.2em] mb-6 uppercase">{col.group}</div>
+              <ul className="space-y-3">
+                {col.items.map((item, i) => (
+                  <li key={i} className="text-sm text-gray-400 flex items-center gap-2">
+                    <span className="text-green-900 text-xs">/</span> {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         ))}
       </div>
@@ -192,7 +271,7 @@ const Deployments = () => (
       <Cpu className="text-green-500" size={20} />
       <h2 className="text-lg text-white font-black tracking-[0.3em] uppercase">Deployed_Modules</h2>
     </div>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {PROJECTS.map((proj) => (
         <div key={proj.id} className="border border-white/5 bg-[#050505] p-8 hover:border-green-500/30 transition-all group relative">
           <div className="absolute top-0 left-0 w-full h-[1px] bg-green-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
@@ -201,12 +280,38 @@ const Deployments = () => (
             <div className="text-[10px] text-white/20 font-bold tracking-widest">{proj.id}</div>
           </div>
           <div className="text-[10px] text-green-500 font-bold tracking-widest mb-2">{proj.type}</div>
-          <h3 className="text-2xl text-white font-black mb-4 uppercase">{proj.name}</h3>
+          <h3 className="text-xl text-white font-black mb-4 uppercase">{proj.name}</h3>
           <p className="text-sm text-gray-500 leading-relaxed">{proj.desc}</p>
         </div>
       ))}
     </div>
   </section>
+);
+
+const Telemetry = () => (
+  <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="flex items-center gap-3 mb-10 border-b border-white/5 pb-4">
+      <BarChart className="text-green-500" size={20} />
+      <h2 className="text-lg text-white font-black tracking-[0.3em] uppercase">Live_Telemetry</h2>
+    </div>
+    
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* CPU/NET Graph */}
+      <div className="border border-white/10 bg-[#050505] p-6">
+        <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-6 border-b border-white/5 pb-2 flex justify-between">
+          <span>CPU_Load_Average</span>
+          <span className="text-green-500 animate-pulse">ACTIVE</span>
+        </div>
+        <LiveGraph />
+      </div>
+
+      {/* RAW Log Stream */}
+      <div className="border border-white/10 bg-[#050505] p-6">
+        <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-6 border-b border-white/5 pb-2">Raw_Network_Stream</div>
+        <LiveLogs />
+      </div>
+    </div>
+  </div>
 );
 
 // --- MAIN LAYOUT & ROUTING ---
@@ -217,14 +322,20 @@ export default function App() {
 
   useEffect(() => {
     if (isBooting) {
-      if (bootLogIndex < BOOT_LOGS.length) {
-        const timer = setTimeout(() => setBootLogIndex(prev => prev + 1), Math.random() * 200 + 50);
-        return () => clearTimeout(timer);
-      } else {
-        setTimeout(() => setIsBooting(false), 600);
-      }
+      setBootLogIndex(0);
+      const timer = setInterval(() => {
+        setBootLogIndex(prev => {
+          if (prev >= BOOT_LOGS.length) {
+            clearInterval(timer);
+            setTimeout(() => setIsBooting(false), 500);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, 150);
+      return () => clearInterval(timer);
     }
-  }, [isBooting, bootLogIndex]);
+  }, [isBooting]);
 
   if (isBooting) {
     return (
@@ -264,10 +375,11 @@ export default function App() {
               </div>
             </div>
             
-            <div className="flex items-center gap-8">
+            <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8">
               <NavLink to="/" label="[ ROOT ]" />
               <NavLink to="/infrastructure" label="[ INFRA ]" />
               <NavLink to="/deployments" label="[ DEPLOYMENTS ]" />
+              <NavLink to="/telemetry" label="[ TELEMETRY ]" />
             </div>
 
             <button onClick={() => setModalOpen(true)} className="px-5 py-2 border border-green-500/30 hover:bg-green-500/10 transition-all text-[10px] uppercase tracking-[0.2em] font-bold text-green-500">
@@ -278,9 +390,10 @@ export default function App() {
 
         <main className="flex-1 max-w-[1400px] w-full mx-auto px-6 pt-32 pb-24">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<Dashboard setIsBooting={setIsBooting} />} />
             <Route path="/infrastructure" element={<Infrastructure />} />
             <Route path="/deployments" element={<Deployments />} />
+            <Route path="/telemetry" element={<Telemetry />} />
           </Routes>
         </main>
 
