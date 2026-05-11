@@ -96,6 +96,7 @@ export default function App() {
               <NavLink to="/infrastructure" label="[ INFRA ]" />
               <NavLink to="/deployments" label="[ DEPLOYMENTS ]" />
               <NavLink to="/telemetry" label="[ TELEMETRY ]" />
+              <NavLink to="/osint" label="[ OSINT_CORE ]" />
             </div>
 
             <div className="flex items-center gap-4">
