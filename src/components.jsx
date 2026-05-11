@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Terminal, ShieldCheck, Box, CheckCircle2, AlertTriangle, Activity, 
-  Search, Database as DbIcon, ChevronRight, MapPin, Crosshair, Network, Lock 
+  Search, Database as DbIcon, ChevronRight, MapPin, Crosshair, Network, 
+  Github, GitFork, Star, MessageSquare
 } from 'lucide-react';
 import { DOCKER_CONTAINERS } from './data';
 
@@ -240,6 +241,7 @@ export const CommandPalette = ({ isOpen, setOpen }) => {
     { name: 'Check Deployments', path: '/deployments' },
     { name: 'Launch OSINT Tools', path: '/osint' },
     { name: 'Monitor Live Telemetry', path: '/telemetry' },
+    { name: 'Connect to 404 : Server Not Found (Discord)', url: 'https://discord.gg/cheterin', icon: <MessageSquare size={14} className="text-[#5865F2]" /> }
   ].filter(a => a.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
@@ -260,14 +262,21 @@ export const CommandPalette = ({ isOpen, setOpen }) => {
           {actions.length === 0 ? (
              <div className="p-4 text-center text-xs text-gray-500 font-mono">No commands found.</div>
           ) : (
-             actions.map(action => (
+             actions.map((action, idx) => (
                <button 
-                 key={action.path}
-                 onClick={() => { navigate(action.path); setOpen(false); setSearch(''); }}
+                 key={idx}
+                 onClick={() => { 
+                   if (action.url) { window.open(action.url, '_blank'); } 
+                   else { navigate(action.path); }
+                   setOpen(false); setSearch(''); 
+                 }}
                  className="w-full text-left p-3 flex items-center justify-between hover:bg-green-500/10 transition-colors group"
                >
-                 <span className="text-xs text-gray-300 font-mono group-hover:text-green-400 flex items-center gap-2"><ChevronRight size={14} className="text-transparent group-hover:text-green-500"/> {action.name}</span>
-                 <span className="text-[9px] text-gray-600 font-mono tracking-widest">{action.path.toUpperCase()}</span>
+                 <span className="text-xs text-gray-300 font-mono group-hover:text-white flex items-center gap-2">
+                   {action.icon ? action.icon : <ChevronRight size={14} className="text-transparent group-hover:text-green-500"/>} 
+                   {action.name}
+                 </span>
+                 <span className="text-[9px] text-gray-600 font-mono tracking-widest">{action.url ? 'EXTERNAL' : action.path.toUpperCase()}</span>
                </button>
              ))
           )}
@@ -283,7 +292,6 @@ export const OsintScanner = () => {
   const [results, setResults] = useState(null);
   const [logs, setLogs] = useState([]);
 
-  // Отвязанная от <form> функция сканирования
   const startScan = () => {
     if (!target || !target.trim() || scanning) return;
     
@@ -328,7 +336,6 @@ export const OsintScanner = () => {
         <span className={scanning ? 'text-red-500 animate-pulse' : 'text-green-500'}>{scanning ? 'SCANNING' : 'STANDBY'}</span>
       </div>
 
-      {/* Безопасный блок без <form> */}
       <div className="flex gap-2 mb-6 relative z-10">
         <div className="relative flex-1">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
@@ -372,6 +379,75 @@ export const OsintScanner = () => {
           )}
         </div>
       </div>
+    </div>
+  );
+};
+
+// НОВЫЙ МОДУЛЬ: Реальный fetch с GitHub API
+export const GithubIntegration = () => {
+  const [repos, setRepos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('https://api.github.com/users/Nanda070/repos?sort=updated&per_page=6')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setRepos(data);
+        setLoading(false);
+      })
+      .catch((e) => {
+        console.error('GitHub API Fetch Error:', e);
+        setLoading(false);
+      });
+  }, []);
+
+  return (
+    <div className="animate-in fade-in duration-500">
+      <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
+        <div className="flex items-center gap-3">
+          <Github className="text-green-500" size={24} />
+          <h2 className="text-2xl text-white font-black tracking-[0.2em] uppercase">GitHub_Repositories</h2>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+          <span className="text-[9px] text-green-500 font-bold tracking-widest uppercase">LIVE_SYNC</span>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="text-center text-xs text-gray-500 font-mono py-12 animate-pulse">FETCHING REPOSITORIES FROM GITHUB...</div>
+      ) : repos.length === 0 ? (
+        <div className="text-center text-xs text-gray-500 font-mono py-12 border border-white/5 bg-[#050505]">NO PUBLIC REPOSITORIES FOUND FOR @Nanda070</div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {repos.map((repo) => (
+            <a 
+              key={repo.id} 
+              href={repo.html_url} 
+              target="_blank" 
+              rel="noreferrer"
+              className="block bg-[#050505] border border-white/10 p-6 hover:border-green-500/40 hover:bg-[#0a0a0a] transition-all group"
+            >
+              <div className="flex justify-between items-start mb-4">
+                <Github size={20} className="text-gray-500 group-hover:text-white transition-colors" />
+                <span className="text-[9px] text-gray-500 font-mono bg-white/5 px-2 py-0.5 rounded">{repo.visibility}</span>
+              </div>
+              <h3 className="text-lg text-white font-bold mb-2 truncate group-hover:text-green-400 transition-colors">{repo.name}</h3>
+              <p className="text-xs text-gray-500 mb-6 line-clamp-2 h-8">{repo.description || 'No description provided.'}</p>
+              <div className="flex items-center gap-4 text-[10px] text-gray-500 font-mono">
+                {repo.language && (
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                    {repo.language}
+                  </div>
+                )}
+                <div className="flex items-center gap-1"><Star size={12} /> {repo.stargazers_count}</div>
+                <div className="flex items-center gap-1"><GitFork size={12} /> {repo.forks_count}</div>
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
