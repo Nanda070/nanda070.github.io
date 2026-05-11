@@ -4,7 +4,8 @@ import { TerminalSquare, Lock, X } from 'lucide-react';
 
 import { SYSTEM_CONFIG } from './data';
 import { Scanlines, CommandPalette } from './components';
-import { Dashboard, Identity, Infrastructure, Deployments, Telemetry } from './pages';
+
+import { Dashboard, Identity, Infrastructure, Deployments, Telemetry, OsintCore } from './pages';
 
 // Компонент бегущей строки Network Sniffer
 const SnifferTicker = () => {
