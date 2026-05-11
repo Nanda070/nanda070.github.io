@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Terminal, ShieldCheck, Box, CheckCircle2, AlertTriangle, Activity, 
-  Search, Database as DbIcon, ChevronRight, MapPin, Crosshair, Network, FileKey 
+  Search, Database as DbIcon, ChevronRight, MapPin, Crosshair, Network, Lock 
 } from 'lucide-react';
 import { DOCKER_CONTAINERS } from './data';
 
@@ -283,15 +283,17 @@ export const OsintScanner = () => {
   const [results, setResults] = useState(null);
   const [logs, setLogs] = useState([]);
 
-  const startScan = (e) => {
-    e.preventDefault();
-    if (!target.trim() || scanning) return;
+  // Отвязанная от <form> функция сканирования
+  const startScan = () => {
+    if (!target || !target.trim() || scanning) return;
+    
     setScanning(true);
     setResults(null);
     setLogs([]);
 
+    const currentTarget = target.trim();
     const steps = [
-      `[INIT] Target lock: ${target}`,
+      `[INIT] Target lock: ${currentTarget}`,
       '[SEARCH] Querying Telegram DB...',
       '[SEARCH] Parsing GitHub commits...',
       '[EXTRACT] Cross-referencing Discord IDs...',
@@ -308,7 +310,7 @@ export const OsintScanner = () => {
         clearInterval(interval);
         setScanning(false);
         setResults({
-          alias: target,
+          alias: currentTarget,
           confidence: '94%',
           lastIp: `192.${Math.floor(Math.random()*255)}.x.x`,
           breaches: Math.floor(Math.random() * 5) + 1,
@@ -326,27 +328,33 @@ export const OsintScanner = () => {
         <span className={scanning ? 'text-red-500 animate-pulse' : 'text-green-500'}>{scanning ? 'SCANNING' : 'STANDBY'}</span>
       </div>
 
-      <form onSubmit={startScan} className="flex gap-2 mb-6 relative z-10">
+      {/* Безопасный блок без <form> */}
+      <div className="flex gap-2 mb-6 relative z-10">
         <div className="relative flex-1">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
           <input 
             type="text" 
             value={target}
             onChange={(e) => setTarget(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') startScan(); }}
             disabled={scanning}
             placeholder="Enter Alias, Email, or IP..." 
             className="w-full bg-[#000000] border border-white/10 p-3 pl-9 text-xs text-white focus:border-red-500 focus:outline-none transition-colors font-mono disabled:opacity-50"
           />
         </div>
-        <button disabled={scanning} className="bg-red-900/20 border border-red-500/30 text-red-500 px-6 font-bold text-xs hover:bg-red-500 hover:text-black transition-colors disabled:opacity-50 tracking-widest">
+        <button 
+          onClick={startScan}
+          disabled={scanning} 
+          className="bg-red-900/20 border border-red-500/30 text-red-500 px-6 font-bold text-xs hover:bg-red-500 hover:text-black transition-colors disabled:opacity-50 tracking-widest"
+        >
           TRACE
         </button>
-      </form>
+      </div>
 
       <div className="grid grid-cols-2 gap-6 flex-1 min-h-0">
         <div className="bg-[#000000] border border-white/10 p-4 font-mono text-[10px] overflow-y-auto space-y-1">
           {logs.map((log, i) => (
-             <div key={i} className={log.includes('[DONE]') ? 'text-green-400 font-bold' : 'text-gray-400'}>{log}</div>
+             <div key={i} className={log?.includes('[DONE]') ? 'text-green-400 font-bold' : 'text-gray-400'}>{log}</div>
           ))}
           {scanning && <div className="text-red-500 animate-pulse">...</div>}
         </div>
@@ -359,7 +367,7 @@ export const OsintScanner = () => {
                 <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-gray-500">CONFIDENCE</span><span className="text-green-500 font-bold">{results.confidence}</span></div>
                 <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-gray-500">LAST_KNOWN_IP</span><span className="text-white flex items-center gap-1"><MapPin size={10}/> {results.lastIp}</span></div>
                 <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-gray-500">TG_ID</span><span className="text-white">{results.tgId}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">DB_BREACHES</span><span className="text-red-400 font-bold flex items-center gap-1"><FileKey size={10}/> {results.breaches} FOUND</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">DB_BREACHES</span><span className="text-red-400 font-bold flex items-center gap-1"><AlertTriangle size={10}/> {results.breaches} FOUND</span></div>
              </div>
           )}
         </div>
