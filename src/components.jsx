@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Terminal, ShieldCheck, Box, CheckCircle2, AlertTriangle, Activity } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Terminal, ShieldCheck, Box, CheckCircle2, AlertTriangle, Activity, Search, Database as DbIcon, ChevronRight } from 'lucide-react';
 import { DOCKER_CONTAINERS } from './data';
 
 export const Scanlines = () => (
@@ -53,7 +54,7 @@ export const HtopSimulation = () => {
     return () => clearInterval(interval);
   }, []);
   return (
-    <div className="bg-[#050505] border border-white/10 p-6 flex flex-col h-[280px]">
+    <div className="bg-[#050505] border border-white/10 p-6 flex flex-col h-[280px] shadow-lg">
       <div className="text-[10px] text-green-500 font-bold tracking-widest mb-4 border-b border-white/5 pb-2 flex justify-between">
         <span className="flex items-center gap-2"><Terminal size={14}/> HTOP_PROCESS_ORCHESTRATOR</span><span>UPTIME: 14 DAYS</span>
       </div>
@@ -116,7 +117,7 @@ export const CICDPipeline = () => {
         <div className="absolute top-1/2 left-0 w-full h-px bg-white/10 -z-10"></div>
         {stages.map((stage, idx) => (
           <div key={idx} className="flex flex-col items-center gap-3 bg-[#050505] px-4 min-w-[100px]">
-            {stage.status === 'success' && <div className="w-8 h-8 rounded-full bg-green-900/40 border border-green-500 flex items-center justify-center"><CheckCircle2 size={16} className="text-green-500"/></div>}
+            {stage.status === 'success' && <div className="w-8 h-8 rounded-full bg-green-900/40 border border-green-500 flex items-center justify-center shadow-[0_0_15px_rgba(34,197,94,0.3)]"><CheckCircle2 size={16} className="text-green-500"/></div>}
             {stage.status === 'warning' && <div className="w-8 h-8 rounded-full bg-yellow-900/40 border border-yellow-500 flex items-center justify-center"><AlertTriangle size={16} className="text-yellow-500"/></div>}
             {stage.status === 'pending' && <div className="w-8 h-8 rounded-full bg-black border border-gray-600 flex items-center justify-center"><Activity size={16} className="text-gray-500 animate-pulse"/></div>}
             <div className="text-center">
@@ -131,7 +132,7 @@ export const CICDPipeline = () => {
 };
 
 export const DockerManager = () => (
-  <div className="bg-[#050505] border border-white/10 p-6">
+  <div className="bg-[#050505] border border-white/10 p-6 shadow-lg">
     <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2 flex justify-between">
       <span className="flex items-center gap-2"><Box size={14}/> DOCKER_ORCHESTRATION</span><span className="text-green-500 font-bold">DAEMON: ACTIVE</span>
     </div>
@@ -149,3 +150,127 @@ export const DockerManager = () => (
     </div>
   </div>
 );
+
+// НОВЫЙ МОДУЛЬ: SQL Симулятор
+export const SqlConsole = () => {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState([{ type: 'info', text: 'PostgreSQL 15.2 connection established.\nType SQL queries (e.g., SELECT * FROM users;) or "help" for commands.' }]);
+  const endRef = React.useRef(null);
+
+  const executeSql = (e) => {
+    e.preventDefault();
+    if(!input.trim()) return;
+    const cmd = input.trim();
+    const newOut = [...output, { type: 'query', text: `nanda_db=> ${cmd}` }];
+    
+    const c = cmd.toLowerCase();
+    if (c.includes('select * from users')) {
+      newOut.push({ type: 'table', cols: ['id', 'username', 'role', 'status'], rows: [['1', 'nanda', 'root', 'active'], ['2', 'sys_daemon', 'bot', 'active']] });
+    } else if (c.includes('select * from roles')) {
+      newOut.push({ type: 'table', cols: ['role_id', 'guild_id', 'permissions'], rows: [['849302', '110293', '0x8'], ['993021', '110293', '0x0']] });
+    } else if (c === 'help') {
+      newOut.push({ type: 'info', text: 'Available mock queries:\n- SELECT * FROM users;\n- SELECT * FROM roles;\n- clear' });
+    } else if (c === 'clear') {
+      setOutput([]); setInput(''); return;
+    } else {
+      newOut.push({ type: 'error', text: `ERROR: syntax error at or near "${cmd.split(' ')[0]}"` });
+    }
+    setOutput(newOut); setInput('');
+  };
+
+  useEffect(() => endRef.current?.scrollIntoView({ behavior: "smooth" }), [output]);
+
+  return (
+    <div className="bg-[#050505] border border-white/10 p-6 shadow-lg flex flex-col h-[300px]">
+      <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2 flex justify-between">
+        <span className="flex items-center gap-2"><DbIcon size={14}/> PSQL_CONSOLE</span>
+        <span className="text-blue-500 font-bold">PORT: 5432</span>
+      </div>
+      <div className="flex-1 overflow-y-auto font-mono text-[10px] space-y-2 scrollbar-hide">
+        {output.map((out, i) => {
+          if (out.type === 'table') return (
+             <div key={i} className="my-2 border border-white/10">
+               <div className="grid grid-cols-4 bg-white/5 p-1 text-green-500 font-bold border-b border-white/10">
+                 {out.cols.map(c => <div key={c}>{c}</div>)}
+               </div>
+               {out.rows.map((row, rIdx) => (
+                 <div key={rIdx} className="grid grid-cols-4 p-1 text-gray-300">
+                   {row.map((cell, cIdx) => <div key={cIdx}>{cell}</div>)}
+                 </div>
+               ))}
+               <div className="p-1 text-gray-500">({out.rows.length} rows)</div>
+             </div>
+          );
+          return <div key={i} className={`${out.type === 'error' ? 'text-red-400' : out.type === 'query' ? 'text-white' : 'text-blue-400'} whitespace-pre-wrap`}>{out.text}</div>;
+        })}
+        <div ref={endRef} />
+      </div>
+      <form onSubmit={executeSql} className="mt-2 border-t border-white/10 pt-2 flex items-center gap-2">
+        <span className="text-blue-500 font-bold text-xs">nanda_db=&gt;</span>
+        <input type="text" value={input} onChange={e=>setInput(e.target.value)} className="bg-transparent flex-1 text-xs text-white focus:outline-none font-mono" autoComplete="off" placeholder="SELECT * FROM users;"/>
+      </form>
+    </div>
+  );
+};
+
+// НОВЫЙ МОДУЛЬ: Command Palette (Omnibar)
+export const CommandPalette = ({ isOpen, setOpen }) => {
+  const navigate = useNavigate();
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setOpen(prev => !prev);
+      }
+      if (e.key === 'Escape') setOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [setOpen]);
+
+  if (!isOpen) return null;
+
+  const actions = [
+    { name: 'Go to Dashboard', path: '/' },
+    { name: 'View Identity Profile', path: '/identity' },
+    { name: 'Open Infrastructure Matrix', path: '/infrastructure' },
+    { name: 'Check Deployments', path: '/deployments' },
+    { name: 'Monitor Live Telemetry', path: '/telemetry' },
+  ].filter(a => a.name.toLowerCase().includes(search.toLowerCase()));
+
+  return (
+    <div className="fixed inset-0 z-[300] bg-black/80 backdrop-blur-sm flex items-start justify-center pt-[15vh]">
+      <div className="w-full max-w-xl bg-[#0a0a0a] border border-green-500/30 shadow-[0_0_50px_rgba(34,197,94,0.1)] rounded-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="p-4 flex items-center gap-3 border-b border-white/10">
+          <Search className="text-green-500" size={18} />
+          <input 
+            autoFocus 
+            value={search} 
+            onChange={e=>setSearch(e.target.value)} 
+            placeholder="Type a command or search..." 
+            className="w-full bg-transparent text-white text-sm focus:outline-none font-mono"
+          />
+          <div className="text-[10px] text-gray-500 border border-white/10 px-1.5 py-0.5 rounded">ESC</div>
+        </div>
+        <div className="max-h-[300px] overflow-y-auto p-2">
+          {actions.length === 0 ? (
+             <div className="p-4 text-center text-xs text-gray-500 font-mono">No commands found.</div>
+          ) : (
+             actions.map(action => (
+               <button 
+                 key={action.path}
+                 onClick={() => { navigate(action.path); setOpen(false); setSearch(''); }}
+                 className="w-full text-left p-3 flex items-center justify-between hover:bg-green-500/10 transition-colors group"
+               >
+                 <span className="text-xs text-gray-300 font-mono group-hover:text-green-400 flex items-center gap-2"><ChevronRight size={14} className="text-transparent group-hover:text-green-500"/> {action.name}</span>
+                 <span className="text-[9px] text-gray-600 font-mono tracking-widest">{action.path.toUpperCase()}</span>
+               </button>
+             ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
