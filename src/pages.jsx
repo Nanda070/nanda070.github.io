@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
-import { User, Fingerprint, Crosshair, Layers, Binary, Activity, TerminalSquare, Play, FolderTree, FileCode, Cpu, Share2, Globe, Network, Server, Database, BarChart } from 'lucide-react';
-import { SYSTEM_CONFIG, TECH_MATRIX, TIMELINE, PROJECTS, VFS_DATA } from './data';
-import { HtopSimulation, DockerManager, CICDPipeline, ThreatMonitor, LiveGraph, LiveLogs, SqlConsole } from './components';
-import { OSINT_DB } from './data';
-import { OsintScanner } from './components';
+import { 
+  User, Fingerprint, Crosshair, Layers, Binary, Activity, 
+  TerminalSquare, Play, FolderTree, FileCode, Cpu, Share2, 
+  Globe, Network, Server, Database, BarChart 
+} from 'lucide-react';
+import { SYSTEM_CONFIG, TECH_MATRIX, TIMELINE, PROJECTS, VFS_DATA, OSINT_DB } from './data';
+import { 
+  HtopSimulation, DockerManager, CICDPipeline, ThreatMonitor, 
+  LiveGraph, LiveLogs, SqlConsole, OsintScanner 
+} from './components';
 
 export const Dashboard = () => (
   <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 animate-in fade-in duration-500">
@@ -79,46 +84,6 @@ export const Identity = () => (
   </div>
 );
 
-export const OsintCore = () => (
-  <div className="space-y-12 animate-in fade-in duration-500">
-    <section>
-      <div className="flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
-        <Crosshair className="text-red-500" size={24} />
-        <h2 className="text-2xl text-white font-black tracking-[0.2em] uppercase">Open_Source_Intelligence</h2>
-      </div>
-      <p className="text-gray-400 max-w-3xl leading-relaxed mb-8">
-        Разработка парсеров, ботов и аналитических модулей для сбора данных по открытым источникам. Мониторинг действий, анализ логов и выявление аномалий в сети. Инструменты спроектированы с упором на отказоустойчивость при работе с большими массивами данных.
-      </p>
-
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        <div className="xl:col-span-2">
-          <OsintScanner />
-        </div>
-        
-        <div className="xl:col-span-1 space-y-6">
-          <div className="bg-[#050505] border border-white/10 p-6">
-             <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Active_Probes</div>
-             <div className="space-y-3">
-               {OSINT_DB.map((db, i) => (
-                 <div key={i} className="flex justify-between items-center text-[10px] font-mono border border-white/5 p-2 bg-[#000000]">
-                   <div>
-                     <div className="text-white">{db.module}</div>
-                     <div className="text-gray-600 mt-0.5">LATENCY: {db.latency}</div>
-                   </div>
-                   <div className="text-right">
-                     <div className={db.status === 'ACTIVE' ? 'text-green-500' : 'text-gray-500'}>{db.status}</div>
-                     <div className="text-gray-600 mt-0.5">{db.records} REC</div>
-                   </div>
-                 </div>
-               ))}
-             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
-);
-
 export const Infrastructure = () => {
   const [mockEndpoint, setMockEndpoint] = useState('/api/v1/auth/status');
   const [mockResponse, setMockResponse] = useState('');
@@ -147,7 +112,6 @@ export const Infrastructure = () => {
         </div>
       </section>
       
-      {/* ИНТЕГРИРОВАН SQL И API */}
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         <div>
           <div className="flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
@@ -247,6 +211,44 @@ export const Deployments = () => {
     </div>
   );
 };
+
+export const OsintCore = () => (
+  <div className="space-y-12 animate-in fade-in duration-500">
+    <section>
+      <div className="flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
+        <Crosshair className="text-red-500" size={24} />
+        <h2 className="text-2xl text-white font-black tracking-[0.2em] uppercase">Open_Source_Intelligence</h2>
+      </div>
+      <p className="text-gray-400 max-w-3xl leading-relaxed mb-8">
+        Разработка парсеров, ботов и аналитических модулей для сбора данных по открытым источникам. Мониторинг действий, анализ логов и выявление аномалий в сети. Инструменты спроектированы с упором на отказоустойчивость при работе с большими массивами данных.
+      </p>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div className="xl:col-span-2">
+          <OsintScanner />
+        </div>
+        <div className="xl:col-span-1 space-y-6">
+          <div className="bg-[#050505] border border-white/10 p-6">
+             <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Active_Probes</div>
+             <div className="space-y-3">
+               {OSINT_DB.map((db, i) => (
+                 <div key={i} className="flex justify-between items-center text-[10px] font-mono border border-white/5 p-2 bg-[#000000]">
+                   <div>
+                     <div className="text-white">{db.module}</div>
+                     <div className="text-gray-600 mt-0.5">LATENCY: {db.latency}</div>
+                   </div>
+                   <div className="text-right">
+                     <div className={db.status === 'ACTIVE' ? 'text-green-500' : 'text-gray-500'}>{db.status}</div>
+                     <div className="text-gray-600 mt-0.5">{db.records} REC</div>
+                   </div>
+                 </div>
+               ))}
+             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+);
 
 export const Telemetry = () => (
   <div className="space-y-12 animate-in fade-in duration-500">
