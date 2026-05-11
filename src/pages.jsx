@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
-import { 
-  User, Fingerprint, Crosshair, Layers, Binary, Activity, 
-  TerminalSquare, Play, FolderTree, FileCode, Cpu, Share2, 
-  Globe, Network, Server, Database, BarChart 
-} from 'lucide-react';
+import { User, Fingerprint, Crosshair, Layers, Binary, Activity, TerminalSquare, Play, FolderTree, FileCode, Cpu, Share2, Globe, Network, Server, Database, BarChart } from 'lucide-react';
 import { SYSTEM_CONFIG, TECH_MATRIX, TIMELINE, PROJECTS, VFS_DATA } from './data';
-import { HtopSimulation, DockerManager, CICDPipeline, ThreatMonitor, LiveGraph, LiveLogs } from './components';
+import { HtopSimulation, DockerManager, CICDPipeline, ThreatMonitor, LiveGraph, LiveLogs, SqlConsole } from './components';
 
 export const Dashboard = () => (
   <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 animate-in fade-in duration-500">
@@ -109,6 +105,35 @@ export const Infrastructure = () => {
         </div>
       </section>
       
+      {/* ИНТЕГРИРОВАН SQL И API */}
+      <section className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <div>
+          <div className="flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
+            <TerminalSquare className="text-green-500" size={24} />
+            <h2 className="text-2xl text-white font-black tracking-[0.2em] uppercase">API_Sandbox</h2>
+          </div>
+          <div className="bg-[#050505] border border-white/10 p-6 flex flex-col h-[300px]">
+            <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-4">REST API Request Builder</div>
+            <div className="flex gap-2 mb-4">
+              <select className="bg-[#000000] border border-white/10 text-green-500 p-2 text-xs font-bold outline-none"><option>GET</option><option>POST</option></select>
+              <input type="text" value={mockEndpoint} onChange={(e)=>setMockEndpoint(e.target.value)} className="bg-[#000000] border border-white/10 text-white p-2 text-xs flex-1 outline-none font-mono" />
+              <button onClick={executeApi} className="bg-green-500/10 text-green-500 border border-green-500/30 px-4 hover:bg-green-500 hover:text-black transition-colors flex items-center gap-2"><Play size={14}/> EXEC</button>
+            </div>
+            <div className="bg-[#000000] border border-white/10 p-4 flex-1 overflow-y-auto">
+              <div className="text-[10px] text-green-500 uppercase tracking-widest mb-2 border-b border-white/5 pb-1">Response JSON</div>
+              <pre className="text-xs text-gray-300 font-mono">{mockResponse || '// Awaiting execution...'}</pre>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div className="flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
+            <Database className="text-green-500" size={24} />
+            <h2 className="text-2xl text-white font-black tracking-[0.2em] uppercase">DB_Terminal</h2>
+          </div>
+          <SqlConsole />
+        </div>
+      </section>
+
       <section>
         <div className="flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
           <Activity className="text-green-500" size={24} />
@@ -123,27 +148,6 @@ export const Infrastructure = () => {
               <p className="text-sm text-gray-500 leading-relaxed max-w-3xl">{log.desc}</p>
             </div>
           ))}
-        </div>
-      </section>
-
-      <section>
-        <div className="flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
-          <TerminalSquare className="text-green-500" size={24} />
-          <h2 className="text-2xl text-white font-black tracking-[0.2em] uppercase">API_Sandbox</h2>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-[#050505] border border-white/10 p-6">
-            <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-4">REST API Request Builder</div>
-            <div className="flex gap-2 mb-4">
-              <select className="bg-[#000000] border border-white/10 text-green-500 p-2 text-xs font-bold outline-none"><option>GET</option><option>POST</option></select>
-              <input type="text" value={mockEndpoint} onChange={(e)=>setMockEndpoint(e.target.value)} className="bg-[#000000] border border-white/10 text-white p-2 text-xs flex-1 outline-none font-mono" />
-              <button onClick={executeApi} className="bg-green-500/10 text-green-500 border border-green-500/30 px-4 hover:bg-green-500 hover:text-black transition-colors flex items-center gap-2"><Play size={14}/> EXEC</button>
-            </div>
-          </div>
-          <div className="bg-[#000000] border border-white/10 p-4 h-[200px] overflow-y-auto">
-            <div className="text-[10px] text-green-500 uppercase tracking-widest mb-2 border-b border-white/5 pb-1">Response JSON</div>
-            <pre className="text-xs text-gray-300 font-mono">{mockResponse || '// Awaiting execution...'}</pre>
-          </div>
         </div>
       </section>
     </div>
