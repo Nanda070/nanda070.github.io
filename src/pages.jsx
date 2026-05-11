@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { 
   User, Fingerprint, Crosshair, Layers, Binary, Activity, 
   TerminalSquare, Play, FolderTree, FileCode, Cpu, Share2, 
-  Globe, Network, Server, Database, BarChart 
+  Globe, Network, Server, Database, BarChart, MessageSquare 
 } from 'lucide-react';
 import { SYSTEM_CONFIG, TECH_MATRIX, TIMELINE, PROJECTS, VFS_DATA, OSINT_DB } from './data';
 import { 
   HtopSimulation, DockerManager, CICDPipeline, ThreatMonitor, 
-  LiveGraph, LiveLogs, SqlConsole, OsintScanner 
+  LiveGraph, LiveLogs, SqlConsole, OsintScanner, GithubIntegration 
 } from './components';
 
 export const Dashboard = () => (
@@ -65,7 +65,22 @@ export const Identity = () => (
           <li className="flex justify-between items-center text-sm"><span className="text-gray-500">Threat Level:</span><span className="text-green-500 font-bold">Zero</span></li>
         </ul>
       </div>
+      
+      {/* ВИДЖЕТ DISCORD СЕРВЕРА 404 */}
+      <a href="https://discord.gg/cheterin" target="_blank" rel="noreferrer" className="block border border-[#5865F2]/40 bg-[#050505] hover:bg-[#5865F2]/10 transition-colors p-6 relative overflow-hidden group">
+        <div className="absolute right-0 top-0 w-32 h-32 bg-[#5865F2]/15 blur-3xl rounded-full group-hover:bg-[#5865F2]/30 transition-all"></div>
+        <div className="flex justify-between items-start mb-4 relative z-10">
+          <div className="flex items-center gap-2">
+            <MessageSquare size={18} className="text-[#5865F2]" />
+            <span className="text-[10px] text-[#5865F2] font-bold tracking-widest uppercase">SECURE_COMMS // DISCORD</span>
+          </div>
+          <div className="flex gap-1"><div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div></div>
+        </div>
+        <h3 className="text-xl text-white font-black tracking-widest uppercase relative z-10">404 : Server Not Found</h3>
+        <p className="text-xs text-gray-400 font-mono mt-2 relative z-10 group-hover:text-white transition-colors">discord.gg/cheterin</p>
+      </a>
     </div>
+
     <div className="lg:col-span-8 space-y-12">
       <section>
         <div className="flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
@@ -165,6 +180,31 @@ export const Deployments = () => {
 
   return (
     <div className="space-y-16 animate-in fade-in duration-500">
+      
+      {/* РЕАЛЬНЫЕ РЕПОЗИТОРИИ С GITHUB API */}
+      <GithubIntegration />
+
+      <section>
+        <div className="flex items-center gap-3 mb-10 border-b border-white/5 pb-4">
+          <Cpu className="text-green-500" size={24} />
+          <h2 className="text-2xl text-white font-black tracking-[0.2em] uppercase">Static_Modules (Archive)</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {PROJECTS.map((proj) => (
+            <div key={proj.id} className="border border-white/5 bg-[#050505] p-8 hover:bg-[#0a0a0a] hover:border-green-500/30 transition-all group relative cursor-crosshair">
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-green-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"></div>
+              <div className="flex justify-between items-start mb-6">
+                <div className="text-green-500/40 group-hover:text-green-500 transition-colors">{proj.icon}</div>
+                <div className="text-[10px] text-white/20 font-bold tracking-widest">{proj.id}</div>
+              </div>
+              <div className="text-[10px] text-green-500 font-bold tracking-[0.2em] mb-2 uppercase">{proj.type}</div>
+              <h3 className="text-xl text-white font-black mb-4 uppercase">{proj.name}</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">{proj.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <CICDPipeline />
       
       <section>
@@ -185,27 +225,6 @@ export const Deployments = () => {
             <div className="absolute top-0 right-0 bg-green-500/10 text-green-500 text-[9px] font-bold px-2 py-1 uppercase tracking-widest">READ_ONLY</div>
             <pre className="text-sm text-gray-300 font-mono leading-relaxed">{VFS_DATA[activeFile]}</pre>
           </div>
-        </div>
-      </section>
-
-      <section>
-        <div className="flex items-center gap-3 mb-10 border-b border-white/5 pb-4">
-          <Cpu className="text-green-500" size={24} />
-          <h2 className="text-2xl text-white font-black tracking-[0.2em] uppercase">Deployed_Modules</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {PROJECTS.map((proj) => (
-            <div key={proj.id} className="border border-white/5 bg-[#050505] p-8 hover:bg-[#0a0a0a] hover:border-green-500/30 transition-all group relative cursor-crosshair">
-              <div className="absolute top-0 left-0 w-full h-[1px] bg-green-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"></div>
-              <div className="flex justify-between items-start mb-6">
-                <div className="text-green-500/40 group-hover:text-green-500 transition-colors">{proj.icon}</div>
-                <div className="text-[10px] text-white/20 font-bold tracking-widest">{proj.id}</div>
-              </div>
-              <div className="text-[10px] text-green-500 font-bold tracking-[0.2em] mb-2 uppercase">{proj.type}</div>
-              <h3 className="text-xl text-white font-black mb-4 uppercase">{proj.name}</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">{proj.desc}</p>
-            </div>
-          ))}
         </div>
       </section>
     </div>
