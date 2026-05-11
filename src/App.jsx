@@ -3,15 +3,31 @@ import { HashRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { TerminalSquare, Lock, X } from 'lucide-react';
 
 import { SYSTEM_CONFIG } from './data';
-import { Scanlines } from './components';
+import { Scanlines, CommandPalette } from './components';
 import { Dashboard, Identity, Infrastructure, Deployments, Telemetry } from './pages';
+
+// Компонент бегущей строки Network Sniffer
+const SnifferTicker = () => {
+  const [hashes, setHashes] = useState('');
+  useEffect(() => {
+    const generateHash = () => Array.from({length: 12}, () => Math.floor(Math.random() * 16).toString(16)).join('');
+    setHashes(Array.from({length: 20}, () => `[0x${generateHash()}]`).join('   ---   '));
+  }, []);
+  return (
+    <div className="overflow-hidden whitespace-nowrap border-t border-b border-green-900/30 bg-green-950/20 py-1 flex">
+       <div className="animate-[marquee_20s_linear_infinite] text-[8px] font-mono text-green-500/40 inline-block">
+          {hashes} {hashes} {hashes}
+       </div>
+    </div>
+  );
+};
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isBooting, setIsBooting] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
 
-  // Имитация первоначальной загрузки, если необходимо
   useEffect(() => {
      if(isAuthenticated) {
         setIsBooting(true);
@@ -61,6 +77,7 @@ export default function App() {
     <HashRouter>
       <div className="min-h-screen bg-[#020202] text-gray-400 font-mono selection:bg-green-500/30 selection:text-green-400 flex flex-col relative">
         <Scanlines />
+        <CommandPalette isOpen={paletteOpen} setOpen={setPaletteOpen} />
         
         <nav className="fixed w-full top-0 border-b border-green-900/30 bg-[#000000]/95 backdrop-blur-xl z-50">
           <div className="max-w-[1600px] mx-auto px-6 lg:px-8 py-5 flex flex-col lg:flex-row justify-between items-center gap-6">
@@ -80,9 +97,15 @@ export default function App() {
               <NavLink to="/telemetry" label="[ TELEMETRY ]" />
             </div>
 
-            <button onClick={() => setModalOpen(true)} className="px-6 py-2.5 border border-green-500/40 bg-green-500/5 hover:bg-green-500 hover:text-black transition-all duration-300 text-[10px] uppercase tracking-[0.25em] font-bold text-green-500">
-              INIT_CONTACT
-            </button>
+            <div className="flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-2 border border-white/10 px-3 py-1.5 text-[10px] text-gray-500 cursor-pointer hover:border-green-500/50 transition-colors" onClick={() => setPaletteOpen(true)}>
+                <span>CMD / SEARCH</span>
+                <span className="bg-white/10 px-1 rounded">CTRL+K</span>
+              </div>
+              <button onClick={() => setModalOpen(true)} className="px-6 py-2 border border-green-500/40 bg-green-500/5 hover:bg-green-500 hover:text-black transition-all duration-300 text-[10px] uppercase tracking-[0.25em] font-bold text-green-500">
+                INIT_CONTACT
+              </button>
+            </div>
           </div>
         </nav>
 
@@ -96,8 +119,11 @@ export default function App() {
           </Routes>
         </main>
 
-        <footer className="py-8 border-t border-green-900/20 bg-[#000000] text-center text-[10px] text-gray-600 tracking-[0.5em] font-bold">
-          EOF / {new Date().getFullYear()} / ZERO_TRUST PROTOCOL ACTIVE
+        <footer className="mt-auto">
+          <SnifferTicker />
+          <div className="py-6 border-t border-green-900/20 bg-[#000000] text-center text-[10px] text-gray-600 tracking-[0.5em] font-bold">
+            EOF / {new Date().getFullYear()} / ZERO_TRUST PROTOCOL ACTIVE
+          </div>
         </footer>
 
         {modalOpen && (
