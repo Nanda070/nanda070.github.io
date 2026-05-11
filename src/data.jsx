@@ -43,6 +43,13 @@ export const DOCKER_CONTAINERS = [
   { name: 'api_gateway', image: 'nginx:alpine', status: 'Up 14 days', ports: '80, 443', cpu: '0.5%' }
 ];
 
+export const OSINT_DB = [
+  { module: 'Telegram Probe', status: 'ACTIVE', latency: '42ms', records: '14.2M' },
+  { module: 'GitHub Dorks', status: 'ACTIVE', latency: '18ms', records: '2.1M' },
+  { module: 'Discord Indexer', status: 'ACTIVE', latency: '65ms', records: '8.4M' },
+  { module: 'IP Subnet Scanner', status: 'IDLE', latency: '-', records: '44.8M' }
+];
+
 export const VFS_DATA = {
   "docker-compose.yml": `version: '3.8'\nservices:\n  bot_core:\n    build: .\n    restart: unless-stopped\n    environment:\n      - TOKEN=\${DISCORD_TOKEN}\n      - DB_URI=postgresql://user:pass@db:5432/core\n    depends_on:\n      - db\n      - redis\n  db:\n    image: postgres:15-alpine\n    volumes:\n      - pgdata:/var/lib/postgresql/data\nvolumes:\n  pgdata:`,
   "nginx.conf": `server {\n    listen 80;\n    server_name api.nanda-sys.dev;\n    location / {\n        proxy_pass http://localhost:8000;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        add_header X-Frame-Options "DENY";\n        add_header X-Content-Type-Options "nosniff";\n    }\n}`,
