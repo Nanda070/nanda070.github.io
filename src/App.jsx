@@ -1,38 +1,90 @@
 import React, { useState, useEffect } from 'react';
-import { Terminal, Code2, ShieldAlert, Cpu, ChevronRight, X, GitBranch, Database, ExternalLink } from 'lucide-react';
+import { 
+  Terminal, ShieldAlert, Cpu, X, GitBranch, Database, 
+  ExternalLink, Activity, Server, Lock, Command, Layers, TerminalSquare 
+} from 'lucide-react';
 
-const TECH_STACK = [
-  { label: 'OS & Env', val: 'Linux (Debian/Ubuntu), tmux, VDS Configuration' },
-  { label: 'Languages', val: 'Python 3.11+, Java, JavaScript' },
-  { label: 'Frameworks', val: 'discord.py, React, Spigot/Paper API' },
-  { label: 'Architecture', val: 'Slash Commands, Modular Cogs, Async Operations' }
+// --- DATA MODULES ---
+const SYSTEM_METRICS = [
+  { label: 'UPTIME', val: '99.99%', icon: <Activity size={14} className="text-green-500" /> },
+  { label: 'ENCRYPTION', val: 'AES-256', icon: <Lock size={14} className="text-green-500" /> },
+  { label: 'NODES_ACTIVE', val: '14', icon: <Server size={14} className="text-green-500" /> },
+  { label: 'LAST_DEPLOY', val: 'TODAY', icon: <GitBranch size={14} className="text-green-500" /> }
+];
+
+const EXPERTISE = [
+  {
+    domain: 'BACKEND_CORE',
+    tech: ['Python 3.11+', 'Java', 'Node.js', 'REST API'],
+    desc: 'Разработка асинхронных микросервисов и монолитов. Оптимизация алгоритмов обработки данных и работы с БД.'
+  },
+  {
+    domain: 'INFRASTRUCTURE',
+    tech: ['Linux (Debian/Ubuntu)', 'tmux', 'Docker', 'VDS'],
+    desc: 'Контейнеризация, настройка изолированных сред, управление демонами и обеспечение отказоустойчивости.'
+  },
+  {
+    domain: 'PLATFORM_MODDING',
+    tech: ['discord.py', 'Spigot/Paper API', 'React'],
+    desc: 'Глубокая интеграция с API платформ. Перевод на slash-команды, написание кастомных плагинов и модулей.'
+  }
+];
+
+const TIMELINE = [
+  {
+    date: 'CURRENT',
+    title: 'LIFE5RP Ecosystem Synchronization',
+    desc: 'Перевод архитектуры бота на slash-команды. Реализация строгой синхронизации ролей с полным удалением деструктивных функций (auto-kick). Оптимизация циклов обновления.'
+  },
+  {
+    date: 'PREVIOUS',
+    title: 'AstraSMP Core Infrastructure',
+    desc: 'Модификация Java-исходников для серверов Minecraft. Внедрение систем контроля доступа (Whitelist) и интеграция серверного Voice Chat.'
+  },
+  {
+    date: 'ARCHIVE',
+    title: 'Department Auth System (DF/USAF/MP)',
+    desc: 'Проектирование логики генерации секьюрных токенов. Рефакторинг форм: стандартизация раздела "Знание Законодательной Базы" и чистка устаревших полей.'
+  }
 ];
 
 const PROJECTS = [
   { 
-    id: 'SYS-01', 
-    name: 'LIFE5RP Ecosystem', 
-    desc: 'Система синхронизации ролей и модерации. Переход на slash-архитектуру, строгая изоляция логики обновлений без деструктивных функций.',
-    icon: <Cpu className="text-green-500 mb-4" size={28} />
+    id: 'PRJ-ALPHA', 
+    name: 'RoleSync Daemon', 
+    type: 'Discord.py / Asyncio',
+    desc: 'Автоматизированный демон для LIFE5RP. Отслеживание изменений стейта пользователей и зеркалирование ролей между серверами без задержек.',
+    icon: <Command className="text-green-500 mb-4" size={32} />
   },
   { 
-    id: 'SYS-02', 
-    name: 'Department Auth Core', 
-    desc: 'Модуль генерации токенов доступа с рандомизированными ID. Автоматизация форм аттестации и проверки знаний законодательной базы.',
-    icon: <ShieldAlert className="text-green-500 mb-4" size={28} />
+    id: 'PRJ-BETA', 
+    name: 'AstraSMP Controller', 
+    type: 'Java / Bukkit API',
+    desc: 'Плагин управления ядром сервера. Оптимизация нагрузки на основной поток (Main Thread), кастомная логика эвентов.',
+    icon: <Database className="text-green-500 mb-4" size={32} />
   },
   { 
-    id: 'SYS-03', 
-    name: 'AstraSMP Infrastructure', 
-    desc: 'Модификация Java-кода для серверов Minecraft. Интеграция кастомных конфигураций Voice Chat и управление системами доступа.',
-    icon: <Database className="text-green-500 mb-4" size={28} />
+    id: 'PRJ-GAMMA', 
+    name: 'Security Audit Bot', 
+    type: 'Python / PostgreSQL',
+    desc: 'Система логирования действий администраторов. Автоматическое формирование репортов и блокировка несанкционированных попыток доступа.',
+    icon: <ShieldAlert className="text-green-500 mb-4" size={32} />
+  },
+  { 
+    id: 'PRJ-DELTA', 
+    name: 'Token Generator', 
+    type: 'Discord.py / Cryptography',
+    desc: 'Генерация уникальных идентификаторов для авторизации департаментов. Поддержка валидации и истечения срока действия.',
+    icon: <Lock className="text-green-500 mb-4" size={32} />
   }
 ];
 
-const useTypewriter = (text, speed = 40) => {
+// --- UTILS ---
+const useTypewriter = (text, speed = 25) => {
   const [displayText, setDisplayText] = useState('');
   useEffect(() => {
     let i = 0;
+    setDisplayText('');
     const typing = setInterval(() => {
       setDisplayText(text.substring(0, i));
       i++;
@@ -43,113 +95,187 @@ const useTypewriter = (text, speed = 40) => {
   return displayText;
 };
 
+// --- CORE COMPONENT ---
 export default function App() {
   const [modalOpen, setModalOpen] = useState(false);
-  const heroText = useTypewriter("> INITIALIZING SECURE CONNECTION...\n> LOADING MODULES...\n> SYSTEM ONLINE.", 50);
+  const heroText = useTypewriter("> SYSTEM BOOT SEQUENCE INITIATED...\n> KERNEL LOADED.\n> ESTABLISHING SECURE PROTOCOLS...\n> ACCESS GRANTED: ROOT_USER.", 30);
 
   return (
-    <div className="min-h-screen bg-[#020202] text-gray-400 font-mono selection:bg-green-500/30 selection:text-green-400">
+    <div className="min-h-screen bg-[#000000] text-gray-400 font-mono selection:bg-green-500/30 selection:text-green-400">
       
-      {/* Navigation */}
-      <nav className="fixed w-full top-0 border-b border-white/5 bg-[#020202]/90 backdrop-blur-xl z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3 group cursor-pointer">
-            <div className="p-1.5 bg-green-500/10 border border-green-500/20 group-hover:border-green-500/50 transition-colors">
-              <Terminal className="text-green-500" size={18} />
+      {/* NAVBAR */}
+      <nav className="fixed w-full top-0 border-b border-green-900/30 bg-[#000000]/80 backdrop-blur-md z-50">
+        <div className="max-w-[1400px] mx-auto px-6 py-3 flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <div className="p-1.5 bg-green-950/50 border border-green-500/20">
+              <TerminalSquare className="text-green-500" size={20} />
             </div>
-            <span className="text-white font-black tracking-tighter text-sm uppercase group-hover:text-green-400">System_Admin</span>
+            <div className="flex flex-col">
+              <span className="text-white font-black tracking-tighter text-sm leading-tight uppercase">Adnan</span>
+              <span className="text-[9px] text-green-500 tracking-[0.2em] font-bold">SYS_ADMIN // DEVELOPER</span>
+            </div>
           </div>
           <button 
             onClick={() => setModalOpen(true)}
-            className="text-[10px] uppercase tracking-[0.3em] font-bold border border-green-500/40 text-green-500 px-5 py-2 hover:bg-green-500 hover:text-black transition-all active:scale-95"
+            className="group relative px-6 py-2 bg-green-500/5 hover:bg-green-500/10 border border-green-500/30 transition-all overflow-hidden"
           >
-            Connect_STUB
+            <div className="absolute inset-0 w-full h-full bg-green-500/20 translate-y-full group-hover:translate-y-0 transition-transform"></div>
+            <span className="relative text-[10px] uppercase tracking-[0.2em] font-bold text-green-500">INITIATE_CONTACT</span>
           </button>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="pt-48 pb-32 px-6 max-w-7xl mx-auto">
-        <div className="h-20 mb-8 text-green-500/60 text-xs md:text-sm leading-relaxed">
-          {heroText}<span className="animate-pulse">█</span>
-        </div>
-        <h1 className="text-6xl md:text-8xl font-black text-white mb-8 tracking-tighter uppercase leading-none">
-          Lead <br/>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-green-600 to-emerald-900">
-            Developer
-          </span>
-        </h1>
-        <p className="max-w-xl text-lg text-gray-500 border-l border-green-500/30 pl-8 py-2 mb-12">
-          Проектирование отказоустойчивых архитектур и автоматизация сложных бизнес-процессов. Минимализм в коде, максимальная эффективность в работе.
-        </p>
-      </section>
-
-      {/* Tech Stack Grid */}
-      <section className="py-24 px-6 max-w-7xl mx-auto border-t border-white/5">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/5 border border-white/5">
-          {TECH_STACK.map((item, idx) => (
-            <div key={idx} className="bg-[#020202] p-10 hover:bg-[#050505] transition-all group">
-              <div className="text-[10px] text-green-500/40 mb-2 font-bold tracking-[0.2em]">{item.label}</div>
-              <div className="text-gray-200 text-lg group-hover:text-green-400 transition-colors">{item.val}</div>
+      {/* HERO SECTION */}
+      <section className="pt-40 pb-20 px-6 max-w-[1400px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <div className="lg:col-span-8">
+            <div className="h-24 mb-6 text-green-500/70 text-xs md:text-sm whitespace-pre-line font-bold">
+              {heroText}<span className="animate-pulse text-white">_</span>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Projects */}
-      <section className="py-32 px-6 max-w-7xl mx-auto">
-        <div className="flex items-center gap-4 mb-16">
-          <div className="h-px flex-1 bg-white/5"></div>
-          <h2 className="text-sm text-white font-bold tracking-[0.5em] uppercase">Operations_Log</h2>
-          <div className="h-px flex-1 bg-white/5"></div>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {PROJECTS.map((proj) => (
-            <div key={proj.id} className="border border-white/5 bg-[#040404] p-8 relative group cursor-default">
-              <div className="absolute top-0 left-0 w-full h-[1px] bg-green-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-700"></div>
-              <div className="text-[10px] font-bold text-white/10 mb-6">{proj.id}</div>
-              {proj.icon}
-              <h3 className="text-xl text-white font-black mb-4 uppercase">{proj.name}</h3>
-              <p className="text-sm text-gray-500 leading-relaxed mb-6">{proj.desc}</p>
-              <div className="flex items-center gap-2 text-[10px] text-green-500 font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                STATUS: DEPLOYED <ExternalLink size={12} />
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-black text-white mb-8 tracking-tighter uppercase leading-[0.9]">
+              Engineering <br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-800">
+                Resilience
+              </span>
+            </h1>
+            <p className="max-w-2xl text-lg text-gray-500 border-l-2 border-green-500/40 pl-6 py-2 mb-10 leading-relaxed">
+              Комплексная разработка серверных решений, интеграция API и проектирование закрытых систем. Строгая изоляция логики, отказ от легаси-решений и фокус на производительности.
+            </p>
+          </div>
+          
+          {/* TELEMETRY PANEL */}
+          <div className="lg:col-span-4 hidden lg:flex flex-col justify-center">
+            <div className="border border-green-900/30 bg-[#050505] p-6 relative">
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-green-500/0 via-green-500/50 to-green-500/0"></div>
+              <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-6 border-b border-white/5 pb-2">System_Telemetry</div>
+              <div className="space-y-4">
+                {SYSTEM_METRICS.map((metric, idx) => (
+                  <div key={idx} className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      {metric.icon}
+                      <span className="text-xs text-gray-400 tracking-wider">{metric.label}</span>
+                    </div>
+                    <span className="text-xs text-green-400 font-bold">{metric.val}</span>
+                  </div>
+                ))}
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* EXPERTISE GRID */}
+      <section className="py-20 border-t border-white/5 bg-[#020202]">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <div className="flex items-center gap-4 mb-12">
+            <Layers className="text-green-500" size={24} />
+            <h2 className="text-xl text-white font-black tracking-[0.3em] uppercase">Core_Modules</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {EXPERTISE.map((exp, idx) => (
+              <div key={idx} className="border border-white/5 bg-[#000000] p-8 hover:border-green-500/30 transition-colors">
+                <div className="text-xs text-green-500 font-bold tracking-[0.2em] mb-6">[{exp.domain}]</div>
+                <p className="text-sm text-gray-400 mb-8 leading-relaxed h-20">{exp.desc}</p>
+                <div className="flex flex-wrap gap-2">
+                  {exp.tech.map((t, i) => (
+                    <span key={i} className="text-[10px] bg-green-900/20 text-green-400 px-2 py-1 border border-green-500/20">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* TIMELINE & OPERATIONS */}
+      <section className="py-24 max-w-[1400px] mx-auto px-6">
+        <div className="flex items-center gap-4 mb-16">
+          <Activity className="text-green-500" size={24} />
+          <h2 className="text-xl text-white font-black tracking-[0.3em] uppercase">Operations_Timeline</h2>
+        </div>
+        <div className="border-l border-white/10 ml-3 space-y-12">
+          {TIMELINE.map((log, idx) => (
+            <div key={idx} className="relative pl-10">
+              <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 bg-green-500 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+              <div className="text-[10px] text-green-500 font-bold tracking-widest mb-2">{log.date}</div>
+              <h3 className="text-lg text-white font-bold mb-3">{log.title}</h3>
+              <p className="text-sm text-gray-500 leading-relaxed max-w-3xl">{log.desc}</p>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-20 border-t border-white/5 text-center">
-        <div className="text-[10px] text-gray-700 tracking-[0.4em] uppercase">
-          © 2026 / End_of_Line
+      {/* PROJECTS / REPOSITORIES */}
+      <section className="py-24 border-t border-white/5 bg-[#020202]">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <div className="flex justify-between items-end mb-12">
+            <div className="flex items-center gap-4">
+              <Cpu className="text-green-500" size={24} />
+              <h2 className="text-xl text-white font-black tracking-[0.3em] uppercase">Deployed_Systems</h2>
+            </div>
+            <div className="hidden md:block text-[10px] text-gray-600 tracking-widest">SHOWING: {PROJECTS.length} REPOSITORIES</div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {PROJECTS.map((proj) => (
+              <div key={proj.id} className="border border-white/5 bg-[#050505] p-8 group hover:bg-[#080808] transition-all relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 text-[10px] font-bold text-white/10 group-hover:text-green-500/30 transition-colors">
+                  {proj.id}
+                </div>
+                {proj.icon}
+                <div className="text-[10px] text-green-500 font-bold tracking-widest mb-2">{proj.type}</div>
+                <h3 className="text-2xl text-white font-black mb-4 uppercase">{proj.name}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed mb-8">{proj.desc}</p>
+                <div className="flex items-center gap-2 text-[10px] text-white/40 font-bold tracking-widest uppercase">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                  Status: Online / Active
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="py-12 border-t border-green-900/30 bg-[#000000] text-center">
+        <div className="text-[10px] text-gray-600 tracking-[0.4em] uppercase font-bold">
+          © {new Date().getFullYear()} / ALL SYSTEMS OPERATIONAL / EOF
         </div>
       </footer>
 
-      {/* Modal */}
+      {/* CONTACT MODAL */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-black/95 backdrop-blur-2xl z-[100] flex items-center justify-center p-6">
-          <div className="bg-[#050505] border border-green-500/20 w-full max-w-xl shadow-[0_0_50px_rgba(34,197,94,0.05)]">
-            <div className="flex justify-between items-center p-4 border-b border-white/5 bg-[#080808]">
-              <span className="text-[10px] text-green-500 font-bold tracking-widest uppercase">Establish_Connection</span>
-              <button onClick={() => setModalOpen(false)} className="text-gray-500 hover:text-white transition-colors p-1">
-                <X size={16} />
+        <div className="fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] flex items-center justify-center p-6">
+          <div className="bg-[#050505] border border-green-500/30 w-full max-w-2xl relative shadow-[0_0_80px_rgba(34,197,94,0.05)]">
+            <div className="flex justify-between items-center p-5 border-b border-white/5 bg-[#020202]">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-[10px] text-white font-bold tracking-widest uppercase">Secure_Channel_Req</span>
+              </div>
+              <button onClick={() => setModalOpen(false)} className="text-gray-500 hover:text-white transition-colors">
+                <X size={18} />
               </button>
             </div>
-            <form action="https://formspree.io/f/YOUR_ID" method="POST" className="p-10 space-y-8">
-              <div className="space-y-2">
-                <label className="text-[9px] text-green-500 font-bold uppercase tracking-widest">Source_ID</label>
-                <input name="name" required type="text" placeholder="Identification Required" className="w-full bg-transparent border-b border-white/10 py-3 text-white focus:border-green-500 outline-none transition-all placeholder:text-gray-800" />
+            
+            {/* Formspree Integration */}
+            <form action="https://formspree.io/f/YOUR_ID_HERE" method="POST" className="p-10 space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2 relative">
+                  <label className="text-[10px] text-green-500 font-bold uppercase tracking-widest">Target_ID</label>
+                  <input name="name" required type="text" placeholder="Имя / Позывной" className="w-full bg-transparent border-b border-white/10 py-3 text-white focus:border-green-500 outline-none transition-all placeholder:text-gray-800 text-sm" />
+                </div>
+                <div className="space-y-2 relative">
+                  <label className="text-[10px] text-green-500 font-bold uppercase tracking-widest">Routing_Address</label>
+                  <input name="contact" required type="text" placeholder="@telegram / Email" className="w-full bg-transparent border-b border-white/10 py-3 text-white focus:border-green-500 outline-none transition-all placeholder:text-gray-800 text-sm" />
+                </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-[9px] text-green-500 font-bold uppercase tracking-widest">Secure_Channel</label>
-                <input name="contact" required type="text" placeholder="Telegram / Email" className="w-full bg-transparent border-b border-white/10 py-3 text-white focus:border-green-500 outline-none transition-all placeholder:text-gray-800" />
+              <div className="space-y-2 relative">
+                <label className="text-[10px] text-green-500 font-bold uppercase tracking-widest">Payload_Data</label>
+                <textarea name="msg" required rows="4" placeholder="Спецификация задачи или суть запроса..." className="w-full bg-transparent border-b border-white/10 py-3 text-white focus:border-green-500 outline-none transition-all resize-none placeholder:text-gray-800 text-sm"></textarea>
               </div>
-              <div className="space-y-2">
-                <label className="text-[9px] text-green-500 font-bold uppercase tracking-widest">Payload</label>
-                <textarea name="msg" required rows="3" placeholder="Project Specification..." className="w-full bg-transparent border-b border-white/10 py-3 text-white focus:border-green-500 outline-none transition-all resize-none placeholder:text-gray-800"></textarea>
-              </div>
-              <button type="submit" className="w-full bg-green-600 text-black font-black py-5 text-xs uppercase tracking-[0.3em] hover:bg-green-400 transition-all shadow-lg shadow-green-900/10 active:scale-[0.98]">
+              <button type="submit" className="w-full bg-green-500/10 border border-green-500/50 text-green-500 font-black py-5 text-xs uppercase tracking-[0.3em] hover:bg-green-500 hover:text-black transition-all active:scale-[0.99]">
                 Execute_Transmission
               </button>
             </form>
