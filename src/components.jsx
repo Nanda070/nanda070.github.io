@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Terminal, ShieldCheck, Box, CheckCircle2, AlertTriangle, Activity, Search, Database as DbIcon, ChevronRight } from 'lucide-react';
+import { 
+  Terminal, ShieldCheck, Box, CheckCircle2, AlertTriangle, Activity, 
+  Search, Database as DbIcon, ChevronRight, MapPin, Crosshair, Network, FileKey 
+} from 'lucide-react';
 import { DOCKER_CONTAINERS } from './data';
 
 export const Scanlines = () => (
@@ -151,7 +154,6 @@ export const DockerManager = () => (
   </div>
 );
 
-// НОВЫЙ МОДУЛЬ: SQL Симулятор
 export const SqlConsole = () => {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState([{ type: 'info', text: 'PostgreSQL 15.2 connection established.\nType SQL queries (e.g., SELECT * FROM users;) or "help" for commands.' }]);
@@ -213,7 +215,6 @@ export const SqlConsole = () => {
   );
 };
 
-// НОВЫЙ МОДУЛЬ: Command Palette (Omnibar)
 export const CommandPalette = ({ isOpen, setOpen }) => {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
@@ -237,6 +238,7 @@ export const CommandPalette = ({ isOpen, setOpen }) => {
     { name: 'View Identity Profile', path: '/identity' },
     { name: 'Open Infrastructure Matrix', path: '/infrastructure' },
     { name: 'Check Deployments', path: '/deployments' },
+    { name: 'Launch OSINT Tools', path: '/osint' },
     { name: 'Monitor Live Telemetry', path: '/telemetry' },
   ].filter(a => a.name.toLowerCase().includes(search.toLowerCase()));
 
@@ -274,9 +276,6 @@ export const CommandPalette = ({ isOpen, setOpen }) => {
     </div>
   );
 };
-
-// ... предыдущий код файла components.jsx ...
-import { Search, MapPin, Crosshair, Network, FileKey } from 'lucide-react';
 
 export const OsintScanner = () => {
   const [target, setTarget] = useState('');
@@ -345,15 +344,12 @@ export const OsintScanner = () => {
       </form>
 
       <div className="grid grid-cols-2 gap-6 flex-1 min-h-0">
-        {/* LOGS */}
         <div className="bg-[#000000] border border-white/10 p-4 font-mono text-[10px] overflow-y-auto space-y-1">
           {logs.map((log, i) => (
              <div key={i} className={log.includes('[DONE]') ? 'text-green-400 font-bold' : 'text-gray-400'}>{log}</div>
           ))}
           {scanning && <div className="text-red-500 animate-pulse">...</div>}
         </div>
-
-        {/* RESULTS */}
         <div className="bg-[#000000] border border-white/10 p-4 font-mono text-xs flex flex-col justify-center relative">
           {!results && !scanning && <div className="text-gray-600 text-center text-[10px]">AWAITING TARGET INPUT</div>}
           {scanning && <div className="absolute inset-0 flex items-center justify-center"><Network size={32} className="text-red-500/30 animate-spin" /></div>}
