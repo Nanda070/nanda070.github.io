@@ -95,8 +95,8 @@ export default function App() {
               <NavLink to="/identity" label="[ IDENTITY ]" />
               <NavLink to="/infrastructure" label="[ INFRA ]" />
               <NavLink to="/deployments" label="[ DEPLOYMENTS ]" />
-              <NavLink to="/telemetry" label="[ TELEMETRY ]" />
               <NavLink to="/osint" label="[ OSINT_CORE ]" />
+              <NavLink to="/telemetry" label="[ TELEMETRY ]" />
             </div>
 
             <div className="flex items-center gap-4">
@@ -117,6 +117,7 @@ export default function App() {
             <Route path="/identity" element={<Identity />} />
             <Route path="/infrastructure" element={<Infrastructure />} />
             <Route path="/deployments" element={<Deployments />} />
+            <Route path="/osint" element={<OsintCore />} />
             <Route path="/telemetry" element={<Telemetry />} />
           </Routes>
         </main>
