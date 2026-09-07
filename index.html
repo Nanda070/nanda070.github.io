@@ -265,34 +265,6 @@
       transform: rotateY(180deg);
     }
 
-    /* 3D Specular Glare Reflection */
-    .specular-glare {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      border-radius: 28px;
-      mix-blend-mode: screen;
-      z-index: 50;
-      opacity: 0;
-      transition: opacity 0.35s ease;
-    }
-
-    /* 3D Floating Cyber Hologram Ring */
-    .holo-orbit {
-      position: absolute;
-      inset: -8px;
-      border-radius: 24px;
-      border: 1px dashed rgba(0, 255, 198, 0.4);
-      box-shadow: 0 0 20px rgba(0, 255, 198, 0.15), inset 0 0 15px rgba(0, 255, 198, 0.08);
-      pointer-events: none;
-      animation: holoRotate 12s linear infinite;
-    }
-
-    @keyframes holoRotate {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
     /* Interactive NFC Radar Waves */
     .radar-wave {
       position: absolute;
@@ -341,8 +313,6 @@
 
       <!-- FRONT FACE: Digital Profile Card -->
       <main id="card-front" class="glass-card rounded-[28px] overflow-hidden w-full relative card-face shadow-2xl">
-        <!-- 3D Dynamic Specular Glare -->
-        <div id="card-glare" class="specular-glare"></div>
         
         <!-- Hero / Banner Section -->
         <header class="relative w-full overflow-hidden group">
@@ -362,9 +332,7 @@
           <!-- Overlapping Avatar Profile -->
           <div class="relative px-6 -mt-16 flex items-end justify-between">
             <div class="relative">
-              <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden avatar-halo bg-zinc-950 relative z-10 transition-transform duration-300 hover:scale-105 group/avatar" style="transform: translateZ(35px);">
-                <!-- 3D Rotating Holographic Cyber Ring -->
-                <div class="holo-orbit"></div>
+              <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden avatar-halo bg-zinc-950 relative z-10 transition-transform duration-300 hover:scale-105 group/avatar">
                 <img 
                   id="avatar-img"
                   src="prince.jpg" 
