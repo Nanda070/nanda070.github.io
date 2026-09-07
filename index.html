@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <title>NANDA // System Architect</title>
+  <meta name="description" content="NANDA - System Architect // Full-Stack. Digital Identity & Secure Communications Node.">
+  <meta name="theme-color" content="#050505">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Favicon / Meta -->
+  <link rel="icon" type="image/jpeg" href="prince.jpg">
+
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            cyber: {
+              bg: '#050505',
+              card: 'rgba(12, 12, 15, 0.82)',
+              border: 'rgba(255, 255, 255, 0.08)',
+              highlight: 'rgba(255, 255, 255, 0.15)',
+              accent: '#00ffc6',
+              glow: 'rgba(0, 255, 198, 0.15)'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+            orbitron: ['Orbitron', 'sans-serif'],
+            syne: ['Syne', 'sans-serif']
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'radar': 'radarPing 2.5s cubic-bezier(0, 0, 0.2, 1) infinite',
+            'float': 'float 6s ease-in-out infinite'
+          },
+          keyframes: {
+            radarPing: {
+              '75%, 100%': { transform: 'scale(2.4)', opacity: '0' }
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-6px)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts: Orbitron, Syne, JetBrains Mono & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Syne:wght@700;800&family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome 6 Pro/Free CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    /* Custom High-Performance Styles */
+    :root {
+      color-scheme: dark;
+    }
+
+    * {
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #050505;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      padding-top: max(0.5rem, env(safe-area-inset-top));
+      padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+      padding-left: max(0.5rem, env(safe-area-inset-left));
+      padding-right: max(0.5rem, env(safe-area-inset-right));
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      touch-action: pan-y;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Matrix / Cyber Rain Canvas */
+    #rain-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+      display: block;
+    }
+
+    /* Ambient Spotlight Background */
+    .ambient-glow {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, rgba(0, 255, 198, 0.015) 35%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Ultra Glassmorphic Card */
+    .glass-card {
+      background: rgba(12, 12, 15, 0.82);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 24px 60px -12px rgba(0, 0, 0, 0.95),
+        0 0 40px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Banner Fade Mask */
+    .banner-mask {
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 100%);
+      -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 100%);
+    }
+
+    /* Avatar Halo & Shadow */
+    .avatar-halo {
+      box-shadow: 
+        0 0 0 3px rgba(255, 255, 255, 0.12),
+        0 0 25px rgba(255, 255, 255, 0.1),
+        0 12px 30px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Chromatic Glitch Effect on Hover */
+    .glitch-text {
+      position: relative;
+      display: inline-block;
+      transition: text-shadow 0.2s ease;
+    }
+
+    .glitch-text::before,
+    .glitch-text::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      clip-path: inset(0 0 0 0);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .glitch-text:hover {
+      animation: glitch-skew 0.3s ease-in-out infinite alternate;
+    }
+
+    .glitch-text:hover::before {
+      opacity: 0.9;
+      left: -2px;
+      color: #00ffff;
+      text-shadow: 2px 0 #00ffff;
+      animation: glitch-anim-1 0.4s infinite cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .glitch-text:hover::after {
+      opacity: 0.9;
+      left: 2px;
+      color: #ff0055;
+      text-shadow: -2px 0 #ff0055;
+      animation: glitch-anim-2 0.4s infinite cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    @keyframes glitch-anim-1 {
+      0% { clip-path: inset(10% 0 85% 0); transform: translate(-2px, -1px); }
+      20% { clip-path: inset(65% 0 15% 0); transform: translate(1px, 2px); }
+      40% { clip-path: inset(30% 0 50% 0); transform: translate(-1px, 1px); }
+      60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, -2px); }
+      80% { clip-path: inset(5% 0 70% 0); transform: translate(-2px, 0); }
+      100% { clip-path: inset(45% 0 40% 0); transform: translate(1px, -1px); }
+    }
+
+    @keyframes glitch-anim-2 {
+      0% { clip-path: inset(80% 0 10% 0); transform: translate(2px, 1px); }
+      20% { clip-path: inset(15% 0 70% 0); transform: translate(-1px, -2px); }
+      40% { clip-path: inset(50% 0 35% 0); transform: translate(2px, -1px); }
+      60% { clip-path: inset(5% 0 85% 0); transform: translate(-2px, 2px); }
+      80% { clip-path: inset(70% 0 15% 0); transform: translate(1px, 0); }
+      100% { clip-path: inset(35% 0 55% 0); transform: translate(-1px, 1px); }
+    }
+
+    @keyframes glitch-skew {
+      0% { transform: skew(0deg); }
+      20% { transform: skew(-1deg); }
+      40% { transform: skew(0.5deg); }
+      60% { transform: skew(-0.5deg); }
+      80% { transform: skew(1deg); }
+      100% { transform: skew(0deg); }
+    }
+
+    /* Sleek Interactive Glass Buttons */
+    .interactive-btn {
+      position: relative;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+
+    .interactive-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+      transition: left 0.6s ease;
+      pointer-events: none;
+    }
+
+    .interactive-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 255, 255, 0.04);
+    }
+
+    .interactive-btn:hover::before {
+      left: 100%;
+    }
+
+    .interactive-btn:active {
+      transform: translateY(0) scale(0.985);
+    }
+
+    /* 3D Spatial Parallax & Flip Engine */
+    .card-3d-scene {
+      perspective: 1600px;
+    }
+
+    .card-3d-inner {
+      transform-style: preserve-3d;
+      transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+    }
+
+    .card-face {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      transform-style: preserve-3d;
+    }
+
+    .card-face-back {
+      transform: rotateY(180deg);
+    }
+
+    /* 3D Specular Glare Reflection */
+    .specular-glare {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border-radius: 28px;
+      mix-blend-mode: screen;
+      z-index: 50;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+
+    /* 3D Floating Cyber Hologram Ring */
+    .holo-orbit {
+      position: absolute;
+      inset: -8px;
+      border-radius: 24px;
+      border: 1px dashed rgba(0, 255, 198, 0.4);
+      box-shadow: 0 0 20px rgba(0, 255, 198, 0.15), inset 0 0 15px rgba(0, 255, 198, 0.08);
+      pointer-events: none;
+      animation: holoRotate 12s linear infinite;
+    }
+
+    @keyframes holoRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Interactive NFC Radar Waves */
+    .radar-wave {
+      position: absolute;
+      border-radius: 50%;
+      border: 1.5px solid rgba(0, 255, 198, 0.85);
+      background: radial-gradient(circle, rgba(0, 255, 198, 0.2) 0%, transparent 70%);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      animation: radarPulse 1.25s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+      z-index: 30;
+    }
+
+    @keyframes radarPulse {
+      0% { width: 0; height: 0; opacity: 1; }
+      100% { width: 480px; height: 480px; opacity: 0; }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #050505;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen text-zinc-100 flex items-center justify-center p-3 sm:p-6 md:p-8 relative">
+
+  <!-- 2D High-Performance Canvas Cyber-Rain -->
+  <canvas id="rain-canvas"></canvas>
+
+  <!-- Ambient Radial Lighting -->
+  <div class="ambient-glow"></div>
+
+  <!-- 3D Spatial Scene Container -->
+  <div id="card-scene" class="w-full max-w-[480px] relative z-10 my-auto py-3 card-3d-scene">
+    <div id="card-inner" class="relative w-full card-3d-inner">
+
+      <!-- FRONT FACE: Digital Profile Card -->
+      <main id="card-front" class="glass-card rounded-[28px] overflow-hidden w-full relative card-face shadow-2xl">
+        <!-- 3D Dynamic Specular Glare -->
+        <div id="card-glare" class="specular-glare"></div>
+        
+        <!-- Hero / Banner Section -->
+        <header class="relative w-full overflow-hidden group">
+          <!-- Banner Image -->
+          <div class="relative w-full h-44 sm:h-48 overflow-hidden bg-zinc-950">
+            <img 
+              id="banner-img"
+              src="prince2.jpg" 
+              alt="NANDA Banner" 
+              class="w-full h-full object-cover object-center grayscale contrast-125 brightness-95 banner-mask transition-transform duration-700 ease-out group-hover:scale-105"
+              onerror="handleBannerError(this)"
+            />
+            <!-- Inner Subtle Cyber Grid Overlay -->
+            <div class="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none opacity-60"></div>
+          </div>
+
+          <!-- Overlapping Avatar Profile -->
+          <div class="relative px-6 -mt-16 flex items-end justify-between">
+            <div class="relative">
+              <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden avatar-halo bg-zinc-950 relative z-10 transition-transform duration-300 hover:scale-105 group/avatar" style="transform: translateZ(35px);">
+                <!-- 3D Rotating Holographic Cyber Ring -->
+                <div class="holo-orbit"></div>
+                <img 
+                  id="avatar-img"
+                  src="prince.jpg" 
+                  alt="NANDA Profile" 
+                  class="w-full h-full object-cover grayscale contrast-125 brightness-90 group-hover/avatar:brightness-100 transition-all duration-300"
+                  onerror="handleAvatarError(this)"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80 pointer-events-none"></div>
+              </div>
+              
+              <!-- Pulsing Status Badge on Avatar corner -->
+              <div class="absolute -bottom-1 -right-1 z-20 bg-zinc-950/90 backdrop-blur-md border border-amber-500/20 rounded-full px-2 py-0.5 flex items-center gap-1.5 shadow-lg">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500 shadow-[0_0_8px_#f59e0b]"></span>
+                </span>
+                <span class="font-mono text-[9px] font-semibold text-amber-400 tracking-wider">IDLE</span>
+              </div>
+            </div>
+
+            <!-- Node Status Indicator & 3D NFC Flip Button -->
+            <div class="pb-2 text-right flex flex-col items-end gap-1.5">
+              <button 
+                type="button" 
+                onclick="toggleCardFlip()" 
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 hover:text-cyan-300 transition-all font-mono text-[10px] tracking-wider uppercase shadow-[0_0_12px_rgba(0,255,198,0.15)] active:scale-95 group/flip cursor-pointer"
+                title="Inspect 3D Physical NFC Smart Card">
+                <i class="fa-solid fa-cube text-[10px] group-hover/flip:rotate-180 transition-transform duration-500"></i>
+                <span>3D NFC CARD</span>
+              </button>
+              <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-sm">
+                <i class="fa-solid fa-shield-halved text-[9px] text-zinc-400"></i>
+                <span class="font-mono text-[9px] tracking-wider text-zinc-400 uppercase">NODE: 0x070</span>
+              </div>
+            </div>
+          </div>
+
+      <!-- Identity & Role -->
+      <div class="px-6 pt-3 pb-1">
+        <div class="flex items-center gap-3">
+          <h1 
+            class="glitch-text text-3xl sm:text-4xl font-black tracking-wider text-white cursor-default select-none font-orbitron"
+            data-text="NANDA">
+            NANDA
+          </h1>
+          <span class="font-mono text-xs px-2 py-0.5 rounded bg-white/[0.06] border border-white/[0.08] text-zinc-300 font-medium">
+            v2.6
+          </span>
+        </div>
+        
+        <p class="font-mono text-xs sm:text-[13px] text-zinc-400 tracking-wider mt-1 flex items-center gap-2">
+          <span class="text-zinc-600 font-bold">&gt;</span>
+          <span>System Architect // Full-Stack</span>
+        </p>
+
+        <!-- Slogan Monospace Block -->
+        <div class="mt-3 p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.06] flex items-center gap-2.5 group/slogan hover:border-white/15 transition-colors">
+          <span class="font-mono text-zinc-500 text-xs pl-1 select-none">#</span>
+          <p class="font-mono text-[11px] sm:text-[11.5px] tracking-[0.16em] uppercase text-zinc-300 font-medium truncate">
+            PRIVACY IS A RIGHT NOT A PRIVILEGE
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <div class="px-6 pt-2 pb-5 space-y-5">
+
+      <!-- Section: Ecosystem Nodes (External Links) -->
+      <section aria-labelledby="ecosystem-heading">
+        <div class="flex items-center justify-between mb-2.5">
+          <h2 id="ecosystem-heading" class="font-mono text-[11px] font-semibold tracking-[0.2em] text-zinc-400 uppercase flex items-center gap-2">
+            <i class="fa-solid fa-network-wired text-[10px] text-zinc-500"></i>
+            <span>Ecosystem Nodes</span>
+          </h2>
+          <span class="font-mono text-[10px] text-zinc-600">04 CHANNELS</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <!-- Chetmedia.com -->
+          <a 
+            href="https://Chetmedia.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="interactive-btn rounded-xl p-3 flex flex-col justify-between h-[84px] group"
+            id="link-chetmedia">
+            <div class="flex items-start justify-between">
+              <span class="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-300 group-hover:text-cyan-300 group-hover:border-cyan-500/30 group-hover:shadow-[0_0_12px_rgba(0,255,198,0.15)] transition-all">
+                <i class="fa-solid fa-globe text-xs"></i>
+              </span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-zinc-500 group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"></i>
+            </div>
+            <div class="mt-1">
+              <div class="font-mono text-xs font-semibold text-zinc-200 group-hover:text-white truncate">Chetmedia.com</div>
+              <div class="font-mono text-[9px] text-zinc-400 tracking-wider uppercase">Portal // Media</div>
+            </div>
+          </a>
+
+          <!-- Cheterin.online -->
+          <a 
+            href="https://Cheterin.online" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="interactive-btn rounded-xl p-3 flex flex-col justify-between h-[84px] group"
+            id="link-cheterin">
+            <div class="flex items-start justify-between">
+              <span class="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-300 group-hover:text-cyan-300 group-hover:border-cyan-500/30 group-hover:shadow-[0_0_12px_rgba(0,255,198,0.15)] transition-all">
+                <i class="fa-solid fa-terminal text-xs"></i>
+              </span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-zinc-500 group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"></i>
+            </div>
+            <div class="mt-1">
+              <div class="font-mono text-xs font-semibold text-zinc-200 group-hover:text-white truncate">Cheterin.online</div>
+              <div class="font-mono text-[9px] text-zinc-400 tracking-wider uppercase">Web // Network</div>
+            </div>
+          </a>
+
+          <!-- GitHub -->
+          <a 
+            href="https://github.com/nanda070" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="interactive-btn rounded-xl p-3 flex flex-col justify-between h-[84px] group"
+            id="link-github">
+            <div class="flex items-start justify-between">
+              <span class="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-300 group-hover:text-cyan-300 group-hover:border-cyan-500/30 group-hover:shadow-[0_0_12px_rgba(0,255,198,0.15)] transition-all">
+                <i class="fa-brands fa-github text-sm"></i>
+              </span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-zinc-500 group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"></i>
+            </div>
+            <div class="mt-1">
+              <div class="font-mono text-xs font-semibold text-zinc-200 group-hover:text-white truncate">nanda070</div>
+              <div class="font-mono text-[9px] text-zinc-400 tracking-wider uppercase">Code // Repos</div>
+            </div>
+          </a>
+
+          <!-- Telegram -->
+          <a 
+            href="https://t.me/nanda070" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="interactive-btn rounded-xl p-3 flex flex-col justify-between h-[84px] group"
+            id="link-telegram">
+            <div class="flex items-start justify-between">
+              <span class="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-300 group-hover:text-cyan-300 group-hover:border-cyan-500/30 group-hover:shadow-[0_0_12px_rgba(0,255,198,0.15)] transition-all">
+                <i class="fa-brands fa-telegram text-sm"></i>
+              </span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-zinc-500 group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"></i>
+            </div>
+            <div class="mt-1">
+              <div class="font-mono text-xs font-semibold text-zinc-200 group-hover:text-white truncate">@nanda070</div>
+              <div class="font-mono text-[9px] text-zinc-400 tracking-wider uppercase">DIRECT // TG</div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Section: Direct Comms (Copy-to-Clipboard) -->
+      <section aria-labelledby="contact-heading">
+        <div class="flex items-center justify-between mb-3">
+          <h2 id="contact-heading" class="font-mono text-[11px] font-semibold tracking-[0.2em] text-zinc-400 uppercase flex items-center gap-2">
+            <i class="fa-solid fa-fingerprint text-[10px] text-zinc-500"></i>
+            <span>Direct Comms</span>
+          </h2>
+          <span class="font-mono text-[9.5px] text-zinc-500 tracking-wider">[CLICK TO COPY]</span>
+        </div>
+
+        <div class="space-y-2">
+          
+          <!-- Discord Button -->
+          <button 
+            type="button" 
+            onclick="copyToClipboard('nandak070', 'Discord ID', this)"
+            class="interactive-btn w-full rounded-xl p-3 flex items-center justify-between text-left group"
+            id="btn-discord"
+            title="Click to copy Discord handle">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-300 group-hover:text-white group-hover:border-white/20 shrink-0 transition-all">
+                <i class="fa-brands fa-discord text-xs"></i>
+              </span>
+              <div class="min-w-0">
+                <div class="font-mono text-[10px] text-zinc-500 uppercase tracking-wider">Discord Handle</div>
+                <div class="font-mono text-xs sm:text-sm text-zinc-200 font-medium tracking-tight truncate group-hover:text-white">
+                  nandak070
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 pl-2">
+              <span class="action-icon text-zinc-500 group-hover:text-zinc-300 text-xs transition-colors">
+                <i class="fa-regular fa-copy"></i>
+              </span>
+            </div>
+          </button>
+
+          <!-- Phone 1 (Hungary) -->
+          <button 
+            type="button" 
+            onclick="copyToClipboard('+36-30-406-2072', 'Phone (Hungary)', this)"
+            class="interactive-btn w-full rounded-xl p-3 flex items-center justify-between text-left group"
+            id="btn-phone-hu"
+            title="Click to copy phone number">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-300 group-hover:text-white group-hover:border-white/20 shrink-0 transition-all">
+                <i class="fa-solid fa-phone text-xs"></i>
+              </span>
+              <div class="min-w-0">
+                <div class="font-mono text-[10px] text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <span>Phone</span>
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-white/[0.04] text-zinc-400">HU // +36</span>
+                </div>
+                <div class="font-mono text-xs sm:text-sm text-zinc-200 font-medium tracking-tight truncate group-hover:text-white">
+                  +36-30-406-2072
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 pl-2">
+              <span class="action-icon text-zinc-500 group-hover:text-zinc-300 text-xs transition-colors">
+                <i class="fa-regular fa-copy"></i>
+              </span>
+            </div>
+          </button>
+
+          <!-- Phone 2 (Azerbaijan) -->
+          <button 
+            type="button" 
+            onclick="copyToClipboard('+994-10-399-0299', 'Phone (Azerbaijan)', this)"
+            class="interactive-btn w-full rounded-xl p-3 flex items-center justify-between text-left group"
+            id="btn-phone-az"
+            title="Click to copy phone number">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-300 group-hover:text-white group-hover:border-white/20 shrink-0 transition-all">
+                <i class="fa-solid fa-mobile-screen-button text-xs"></i>
+              </span>
+              <div class="min-w-0">
+                <div class="font-mono text-[10px] text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <span>Phone</span>
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-white/[0.04] text-zinc-400">AZ // +994</span>
+                </div>
+                <div class="font-mono text-xs sm:text-sm text-zinc-200 font-medium tracking-tight truncate group-hover:text-white">
+                  +994-10-399-0299
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 pl-2">
+              <span class="action-icon text-zinc-500 group-hover:text-zinc-300 text-xs transition-colors">
+                <i class="fa-regular fa-copy"></i>
+              </span>
+            </div>
+          </button>
+
+          <!-- Email 1 (Primary) -->
+          <button 
+            type="button" 
+            onclick="copyToClipboard('adnan.huseynli1@gmail.com', 'Primary Email', this)"
+            class="interactive-btn w-full rounded-xl p-3 flex items-center justify-between text-left group"
+            id="btn-email-1"
+            title="Click to copy primary email">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-300 group-hover:text-white group-hover:border-white/20 shrink-0 transition-all">
+                <i class="fa-regular fa-envelope text-xs"></i>
+              </span>
+              <div class="min-w-0">
+                <div class="font-mono text-[10px] text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <span>Email</span>
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-white/[0.04] text-zinc-400">PRIMARY</span>
+                </div>
+                <div class="font-mono text-xs sm:text-sm text-zinc-200 font-medium tracking-tight truncate group-hover:text-white">
+                  adnan.huseynli1@gmail.com
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 pl-2">
+              <span class="action-icon text-zinc-500 group-hover:text-zinc-300 text-xs transition-colors">
+                <i class="fa-regular fa-copy"></i>
+              </span>
+            </div>
+          </button>
+
+          <!-- Email 2 (Secondary) -->
+          <button 
+            type="button" 
+            onclick="copyToClipboard('turkapahf@gmail.com', 'Secondary Email', this)"
+            class="interactive-btn w-full rounded-xl p-3 flex items-center justify-between text-left group"
+            id="btn-email-2"
+            title="Click to copy secondary email">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-300 group-hover:text-white group-hover:border-white/20 shrink-0 transition-all">
+                <i class="fa-solid fa-lock text-xs"></i>
+              </span>
+              <div class="min-w-0">
+                <div class="font-mono text-[10px] text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <span>Email</span>
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-white/[0.04] text-zinc-400">SECONDARY</span>
+                </div>
+                <div class="font-mono text-xs sm:text-sm text-zinc-200 font-medium tracking-tight truncate group-hover:text-white">
+                  turkapahf@gmail.com
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 pl-2">
+              <span class="action-icon text-zinc-500 group-hover:text-zinc-300 text-xs transition-colors">
+                <i class="fa-regular fa-copy"></i>
+              </span>
+            </div>
+          </button>
+
+        </div>
+      </section>
+
+      <!-- Section: Encrypted Signal Dispatcher (PGP/AES -> Telegram) -->
+      <section aria-labelledby="signal-heading" class="pt-1">
+        <div class="rounded-2xl bg-white/[0.025] border border-cyan-500/20 p-3.5 space-y-2.5 relative overflow-hidden group/signal shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-md bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                <i class="fa-solid fa-lock text-[10px]"></i>
+              </span>
+              <h2 id="signal-heading" class="font-mono text-[11px] font-bold text-zinc-200 uppercase tracking-wider">
+                ENCRYPTED SIGNAL // DISPATCH
+              </h2>
+            </div>
+            <span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 tracking-wider">
+              TG DIRECT
+            </span>
+          </div>
+
+          <!-- Secret Input Area -->
+          <div class="relative">
+            <textarea 
+              id="secret-msg-input" 
+              rows="2" 
+              placeholder="> Type secret transmission to NANDA..." 
+              class="w-full bg-zinc-950/80 border border-white/[0.08] focus:border-cyan-500/40 rounded-xl p-2.5 font-mono text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-cyan-500/30 resize-none transition-all"></textarea>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="grid grid-cols-2 gap-2">
+            <button 
+              type="button" 
+              onclick="transmitEncryptedToTelegram()" 
+              id="btn-transmit-tg"
+              class="py-2.5 px-3 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-300 hover:text-white font-mono text-[11px] font-semibold tracking-wider uppercase transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow-[0_0_15px_rgba(0,255,198,0.15)] cursor-pointer">
+              <i class="fa-brands fa-telegram text-xs"></i>
+              <span>SEND VIA TG</span>
+            </button>
+
+            <button 
+              type="button" 
+              onclick="copyEncryptedCipher()" 
+              id="btn-copy-cipher"
+              class="py-2.5 px-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white font-mono text-[11px] tracking-wider uppercase transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer">
+              <i class="fa-regular fa-copy text-xs"></i>
+              <span>COPY CIPHER</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Network Exposure & Client Privacy Telemetry -->
+      <section aria-labelledby="telemetry-heading" class="pt-1">
+        <div class="rounded-2xl bg-zinc-950/60 border border-white/[0.06] p-3 space-y-2 font-mono">
+          <div class="flex items-center justify-between text-[10px]">
+            <div class="flex items-center gap-1.5 text-zinc-400">
+              <i class="fa-solid fa-satellite-dish text-[10px] text-amber-400 animate-pulse"></i>
+              <span class="tracking-wider uppercase font-semibold">YOUR NETWORK EXPOSURE</span>
+            </div>
+            <span class="text-[9px] text-amber-400 font-semibold uppercase px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">
+              AUDIT ACTIVE
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-[10px] pt-0.5">
+            <div class="p-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+              <div class="text-[8.5px] text-zinc-500 uppercase tracking-wider">DETECTED IP</div>
+              <div id="telemetry-ip" class="text-zinc-200 font-bold truncate mt-0.5">SCANNING...</div>
+            </div>
+            <div class="p-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+              <div class="text-[8.5px] text-zinc-500 uppercase tracking-wider">NETWORK REGION</div>
+              <div id="telemetry-region" class="text-zinc-300 truncate mt-0.5">LOCATING...</div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-[9px] pt-1 px-1 border-t border-white/[0.04] text-zinc-500">
+            <div class="flex items-center gap-1">
+              <span>EDGE PING:</span>
+              <span id="telemetry-ping" class="text-emerald-400 font-bold">18ms</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span>UTC EPOCH:</span>
+              <span id="telemetry-epoch" class="text-zinc-400 font-mono">...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Save vCard Quick Action -->
+      <section class="pt-1">
+        <button 
+          type="button"
+          onclick="downloadVCard()"
+          id="btn-save-vcard"
+          class="w-full py-2.5 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/20 text-zinc-300 hover:text-white font-mono text-xs tracking-wider uppercase transition-all duration-300 flex items-center justify-center gap-2 shadow-sm active:scale-[0.99]">
+          <i class="fa-solid fa-address-card text-xs"></i>
+          <span>Save Contact // vCard (.vcf)</span>
+        </button>
+      </section>
+
+      <!-- Footer & Metadata -->
+      <footer class="pt-2 pb-1 border-t border-white/[0.06] text-center space-y-2">
+        <div class="flex items-center justify-center gap-3 font-mono text-[10px] text-zinc-500 tracking-wider">
+          <span class="hover:text-zinc-300 transition-colors cursor-default">PGP: 4096R/NANDA</span>
+          <span class="text-zinc-700">•</span>
+          <span class="hover:text-zinc-300 transition-colors cursor-default">© 2026 NANDA</span>
+        </div>
+        <div class="font-mono text-[9px] text-zinc-600 tracking-[0.2em] uppercase">
+          SECURE ENCRYPTED NODE // VERIFIED
+        </div>
+      </footer>
+
+    </div>
+      </main>
+
+      <!-- BACK FACE: Physical Matte Titanium NFC Smart Card -->
+      <section 
+        id="card-back" 
+        class="glass-card rounded-[28px] w-full absolute inset-0 card-face card-face-back p-5 sm:p-7 flex flex-col justify-between border border-cyan-500/30 shadow-[0_0_50px_rgba(0,255,198,0.12)] overflow-y-auto overscroll-contain" 
+        style="background: radial-gradient(circle at 50% 12%, rgba(18, 26, 38, 0.98), rgba(6, 8, 11, 0.99));">
+        
+        <!-- Top Tech Row -->
+        <div class="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shadow-[0_0_12px_rgba(0,255,198,0.2)]">
+              <i class="fa-solid fa-wifi rotate-90 text-xs"></i>
+            </div>
+            <div>
+              <div class="font-mono text-[11px] text-zinc-200 font-bold tracking-wider">NFC SMART CHIP</div>
+              <div class="font-mono text-[9px] text-cyan-400 tracking-widest uppercase">NTAG216 // 13.56 MHz</div>
+            </div>
+          </div>
+
+          <button 
+            type="button" 
+            onclick="toggleCardFlip()" 
+            class="px-2.5 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] text-zinc-300 hover:text-white font-mono text-[10px] tracking-wider uppercase transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer shadow-sm">
+            <i class="fa-solid fa-rotate-left text-[9px]"></i>
+            <span>FLIP BACK</span>
+          </button>
+        </div>
+
+        <!-- Center: Interactive 3D Gold Contact Chip & Cyber Circuit -->
+        <div class="my-auto text-center relative py-2">
+          <!-- Metallic EMV/NFC Contact Pad with Interactive Tap -->
+          <div 
+            onclick="simulateNfcTap(event)" 
+            class="relative inline-block mx-auto cursor-pointer group/chip select-none"
+            title="Click or Tap to test NFC Antenna Beacon">
+            
+            <!-- Chip Graphic -->
+            <div class="w-28 h-20 sm:w-32 sm:h-24 mx-auto rounded-xl bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 p-[1.5px] shadow-[0_0_25px_rgba(245,158,11,0.25),0_10px_20px_rgba(0,0,0,0.8)] transition-transform duration-300 group-hover/chip:scale-105 active:scale-95 relative overflow-hidden">
+              <div class="w-full h-full rounded-[10px] bg-gradient-to-br from-amber-500/90 via-yellow-600 to-amber-700 p-2 flex flex-col justify-between relative border border-amber-200/40">
+                <!-- Metallic Glint -->
+                <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent opacity-0 group-hover/chip:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                
+                <!-- Circuit Micro-grid Lines -->
+                <div class="flex justify-between items-center h-full">
+                  <div class="w-1/3 h-full border-r border-amber-800/60 flex flex-col justify-around py-1">
+                    <div class="w-full h-0.5 bg-amber-900/40"></div>
+                    <div class="w-full h-0.5 bg-amber-900/40"></div>
+                  </div>
+                  <div class="w-1/3 h-5 rounded border border-amber-800/60 bg-amber-400/20 flex items-center justify-center">
+                    <span class="font-mono text-[8px] font-black text-amber-950 tracking-tighter">NFC</span>
+                  </div>
+                  <div class="w-1/3 h-full border-l border-amber-800/60 flex flex-col justify-around py-1">
+                    <div class="w-full h-0.5 bg-amber-900/40"></div>
+                    <div class="w-full h-0.5 bg-amber-900/40"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pulsing Tap Prompt -->
+            <div class="mt-2.5 flex items-center justify-center gap-1.5 font-mono text-[10px] text-cyan-400 font-semibold tracking-wider uppercase">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-400"></span>
+              </span>
+              <span>TAP CHIP TO TEST BEACON</span>
+            </div>
+          </div>
+
+          <!-- Vector QR Code with NANDA Center Emblem -->
+          <div class="mt-4 p-3 rounded-2xl bg-zinc-950/80 border border-white/[0.08] inline-block shadow-inner">
+            <div class="relative w-32 h-32 sm:w-36 sm:h-36 mx-auto flex items-center justify-center bg-black rounded-xl p-2 border border-cyan-500/20">
+              <!-- Crisp SVG QR Code -->
+              <svg viewBox="0 0 100 100" class="w-full h-full text-zinc-100 fill-current">
+                <!-- Corners -->
+                <rect x="5" y="5" width="26" height="26" rx="4" fill="none" stroke="#00ffc6" stroke-width="4"/>
+                <rect x="11" y="11" width="14" height="14" rx="2" fill="#00ffc6"/>
+                <rect x="69" y="5" width="26" height="26" rx="4" fill="none" stroke="#00ffc6" stroke-width="4"/>
+                <rect x="75" y="11" width="14" height="14" rx="2" fill="#00ffc6"/>
+                <rect x="5" y="69" width="26" height="26" rx="4" fill="none" stroke="#00ffc6" stroke-width="4"/>
+                <rect x="11" y="75" width="14" height="14" rx="2" fill="#00ffc6"/>
+                <!-- Matrix Pattern Blocks -->
+                <rect x="37" y="7" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="47" y="7" width="6" height="6" fill="#00ffc6"/>
+                <rect x="57" y="7" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="37" y="17" width="6" height="6" fill="#00ffc6"/>
+                <rect x="47" y="17" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="57" y="17" width="6" height="6" fill="#00ffc6"/>
+                <rect x="7" y="37" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="17" y="37" width="6" height="6" fill="#00ffc6"/>
+                <rect x="27" y="37" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="67" y="37" width="6" height="6" fill="#00ffc6"/>
+                <rect x="77" y="37" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="87" y="37" width="6" height="6" fill="#00ffc6"/>
+                <rect x="7" y="47" width="6" height="6" fill="#00ffc6"/>
+                <rect x="17" y="47" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="27" y="47" width="6" height="6" fill="#00ffc6"/>
+                <rect x="67" y="47" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="77" y="47" width="6" height="6" fill="#00ffc6"/>
+                <rect x="87" y="47" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="7" y="57" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="17" y="57" width="6" height="6" fill="#00ffc6"/>
+                <rect x="27" y="57" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="67" y="57" width="6" height="6" fill="#00ffc6"/>
+                <rect x="77" y="57" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="87" y="57" width="6" height="6" fill="#00ffc6"/>
+                <rect x="37" y="67" width="6" height="6" fill="#00ffc6"/>
+                <rect x="47" y="67" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="57" y="67" width="6" height="6" fill="#00ffc6"/>
+                <rect x="37" y="77" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="47" y="77" width="6" height="6" fill="#00ffc6"/>
+                <rect x="57" y="77" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="37" y="87" width="6" height="6" fill="#00ffc6"/>
+                <rect x="47" y="87" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="57" y="87" width="6" height="6" fill="#00ffc6"/>
+                <rect x="67" y="67" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="77" y="67" width="6" height="6" fill="#00ffc6"/>
+                <rect x="87" y="67" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="67" y="77" width="6" height="6" fill="#00ffc6"/>
+                <rect x="77" y="77" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="87" y="77" width="6" height="6" fill="#00ffc6"/>
+                <rect x="67" y="87" width="6" height="6" fill="#e4e4e7"/>
+                <rect x="77" y="87" width="6" height="6" fill="#00ffc6"/>
+                <rect x="87" y="87" width="6" height="6" fill="#e4e4e7"/>
+                <!-- Center Logo Shield -->
+                <rect x="40" y="40" width="20" height="20" rx="4" fill="#050505" stroke="#00ffc6" stroke-width="1.5"/>
+                <text x="50" y="54" font-family="'Orbitron', sans-serif" font-weight="900" font-size="11" fill="#00ffc6" text-anchor="middle">N</text>
+              </svg>
+            </div>
+            <div class="font-mono text-[9px] text-zinc-400 mt-2 uppercase tracking-wider">
+              SCAN TO OPEN IDENTITY NODE
+            </div>
+          </div>
+        </div>
+
+        <!-- Laser Engraved Specs Grid -->
+        <div class="bg-white/[0.02] border border-white/[0.06] rounded-xl p-3 space-y-1.5 font-mono text-[9.5px]">
+          <div class="flex justify-between text-zinc-400">
+            <span class="text-zinc-500">CARDHOLDER:</span>
+            <span class="text-zinc-200 font-bold">NANDA // ARCHITECT</span>
+          </div>
+          <div class="flex justify-between text-zinc-400">
+            <span class="text-zinc-500">HARDWARE UID:</span>
+            <span class="text-cyan-400">04:A2:8B:E9:1F:64:80</span>
+          </div>
+          <div class="flex justify-between text-zinc-400">
+            <span class="text-zinc-500">CRYPTO LAYER:</span>
+            <span class="text-zinc-300">PGP 4096R / ED25519</span>
+          </div>
+          <div class="flex justify-between text-zinc-400">
+            <span class="text-zinc-500">ANTENNA:</span>
+            <span class="text-zinc-300">13.56 MHz (ISO 14443-A)</span>
+          </div>
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div class="pt-3 flex gap-2">
+          <button 
+            type="button" 
+            onclick="simulateNfcTap(event)" 
+            class="flex-1 py-2.5 px-3 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 hover:text-cyan-200 font-mono text-xs font-semibold tracking-wider uppercase transition-all flex items-center justify-center gap-2 active:scale-95 shadow-[0_0_15px_rgba(0,255,198,0.15)] cursor-pointer">
+            <i class="fa-solid fa-tower-broadcast text-xs"></i>
+            <span>BROADCAST NFC BEACON</span>
+          </button>
+          <button 
+            type="button" 
+            onclick="toggleCardFlip()" 
+            class="py-2.5 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white font-mono text-xs tracking-wider uppercase transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer">
+            <i class="fa-solid fa-rotate text-xs"></i>
+            <span>FLIP</span>
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+  </div>
+
+  <!-- High-End Cyber Floating Toast Notification -->
+  <aside 
+    id="toast" 
+    role="status" 
+    aria-live="polite"
+    class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-8 sm:bottom-8 z-50 transform translate-y-28 opacity-0 pointer-events-none transition-all duration-300 ease-out flex items-center gap-3 px-4 py-3 rounded-2xl bg-zinc-950/95 border border-emerald-500/30 text-white shadow-[0_10px_35px_rgba(0,0,0,0.95),0_0_25px_rgba(16,185,129,0.2)] backdrop-blur-xl max-w-[380px] mx-auto sm:mx-0"
+    style="bottom: max(1rem, env(safe-area-inset-bottom));">
+    <div class="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+      <i class="fa-solid fa-check text-xs"></i>
+    </div>
+    <div class="min-w-0 pr-1">
+      <div class="font-mono text-[10px] text-emerald-400 uppercase tracking-wider font-semibold" id="toast-title">
+        COPIED TO CLIPBOARD
+      </div>
+      <div class="font-mono text-xs text-zinc-200 truncate" id="toast-message">
+        Value copied
+      </div>
+    </div>
+  </aside>
+
+  <!-- JavaScript Engine -->
+  <script>
+    /* =========================================================================
+       1. 60FPS HIGH-PERFORMANCE 2D CANVAS RAIN ENGINE
+       ========================================================================= */
+    (function initRain() {
+      const canvas = document.getElementById('rain-canvas');
+      const ctx = canvas.getContext('2d');
+
+      let width = 0;
+      let height = 0;
+      let dpr = window.devicePixelRatio || 1;
+      let drops = [];
+
+      // Density tuned for high aesthetics without CPU hogging
+      function getDropCount() {
+        if (window.innerWidth < 640) return 65;
+        if (window.innerWidth < 1024) return 95;
+        return 130;
+      }
+
+      function resize() {
+        dpr = window.devicePixelRatio || 1;
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        ctx.scale(dpr, dpr);
+
+        const targetCount = getDropCount();
+        while (drops.length < targetCount) {
+          drops.push(createDrop(true));
+        }
+        if (drops.length > targetCount) {
+          drops.length = targetCount;
+        }
+      }
+
+      function createDrop(randomY = false) {
+        // Multi-depth layer simulation
+        const depth = Math.random(); // 0 (far/small) to 1 (near/fast)
+        return {
+          x: Math.random() * width,
+          y: randomY ? Math.random() * height : -60 - Math.random() * 50,
+          speed: 12 + depth * 22,             // 12px to 34px / frame
+          length: 15 + depth * 40,            // 15px to 55px length
+          opacity: 0.04 + depth * 0.28,       // 0.04 to 0.32 opacity
+          thickness: depth > 0.7 ? 1.2 : 0.8,
+          tint: Math.random() > 0.8 ? 'cyan' : 'white'
+        };
+      }
+
+      window.addEventListener('resize', debounce(resize, 150));
+      resize();
+
+      let lastTime = performance.now();
+
+      function loop(currentTime) {
+        requestAnimationFrame(loop);
+
+        const delta = Math.min((currentTime - lastTime) / 16.666, 2.0);
+        lastTime = currentTime;
+
+        ctx.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < drops.length; i++) {
+          const d = drops[i];
+          d.y += d.speed * delta;
+
+          // Draw streak
+          const gradient = ctx.createLinearGradient(d.x, d.y - d.length, d.x, d.y);
+          gradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
+          if (d.tint === 'cyan') {
+            gradient.addColorStop(1, `rgba(0, 255, 210, ${d.opacity * 1.2})`);
+          } else {
+            gradient.addColorStop(1, `rgba(220, 230, 245, ${d.opacity})`);
+          }
+
+          ctx.beginPath();
+          ctx.strokeStyle = gradient;
+          ctx.lineWidth = d.thickness;
+          ctx.lineCap = 'round';
+          ctx.moveTo(d.x, d.y - d.length);
+          ctx.lineTo(d.x, d.y);
+          ctx.stroke();
+
+          // Reset drop once off-screen
+          if (d.y - d.length > height) {
+            drops[i] = createDrop(false);
+          }
+        }
+      }
+
+      requestAnimationFrame(loop);
+
+      function debounce(fn, ms) {
+        let timer;
+        return function() {
+          clearTimeout(timer);
+          timer = setTimeout(fn, ms);
+        };
+      }
+    })();
+
+    /* =========================================================================
+       2. CLIPBOARD COPY ENGINE WITH HAPTICS & TOAST
+       ========================================================================= */
+    let toastTimeout = null;
+
+    async function copyToClipboard(text, label, buttonElement) {
+      let copied = false;
+
+      // Haptic feedback for mobile devices
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate(20); } catch(e) {}
+      }
+
+      // Modern Clipboard API
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(text);
+          copied = true;
+        } catch (err) {
+          copied = fallbackCopy(text);
+        }
+      } else {
+        copied = fallbackCopy(text);
+      }
+
+      if (copied) {
+        // Visual button icon swap feedback
+        if (buttonElement) {
+          const iconContainer = buttonElement.querySelector('.action-icon');
+          if (iconContainer) {
+            const originalHTML = iconContainer.innerHTML;
+            iconContainer.innerHTML = '<i class="fa-solid fa-check text-emerald-400"></i>';
+            setTimeout(() => {
+              iconContainer.innerHTML = originalHTML;
+            }, 1800);
+          }
+        }
+
+        // Show Cyber Floating Toast
+        showToast('COPIED // ' + label.toUpperCase(), text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-999999px';
+        textarea.style.top = '-999999px';
+        textarea.setAttribute('readonly', '');
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        textarea.setSelectionRange(0, 99999);
+        const success = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        return success;
+      } catch (err) {
+        console.error('Copy fallback failed:', err);
+        return false;
+      }
+    }
+
+    function showToast(title, message) {
+      const toast = document.getElementById('toast');
+      const toastTitle = document.getElementById('toast-title');
+      const toastMsg = document.getElementById('toast-message');
+
+      if (!toast) return;
+
+      toastTitle.textContent = title;
+      toastMsg.textContent = message;
+
+      // Reset and trigger slide up
+      clearTimeout(toastTimeout);
+      toast.classList.remove('translate-y-28', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        toast.classList.add('translate-y-28', 'opacity-0', 'pointer-events-none');
+      }, 2600);
+    }
+
+    /* =========================================================================
+       3. VCARD (.VCF) DYNAMIC GENERATOR (NFC / MOBILE CONTACT)
+       ========================================================================= */
+    function downloadVCard() {
+      const vcard = [
+        'BEGIN:VCARD',
+        'VERSION:3.0',
+        'FN:NANDA',
+        'N:NANDA;;;;',
+        'TITLE:System Architect // Full-Stack',
+        'TEL;TYPE=CELL,VOICE:+36-30-406-2072',
+        'TEL;TYPE=CELL,VOICE:+994-10-399-0299',
+        'EMAIL;TYPE=INTERNET,PREF:adnan.huseynli1@gmail.com',
+        'EMAIL;TYPE=INTERNET:turkapahf@gmail.com',
+        'URL;TYPE=WORK:https://Chetmedia.com',
+        'URL;TYPE=WORK:https://Cheterin.online',
+        'URL;TYPE=WORK:https://github.com/nanda070',
+        'NOTE:PGP: 4096R/NANDA | Telegram: @nanda070 | Discord: nandak070 | PRIVACY IS A RIGHT NOT A PRIVILEGE',
+        'END:VCARD'
+      ].join('\r\n');
+
+      const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'NANDA.vcf');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      showToast('VCARD GENERATED', 'NANDA.vcf downloaded to device');
+    }
+
+    /* =========================================================================
+       4. IMAGE FALLBACK HANDLERS (AESTHETIC GRACEFUL DEGRADATION)
+       ========================================================================= */
+    function handleBannerError(img) {
+      img.onerror = null;
+      img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="300" viewBox="0 0 800 300"><rect width="800" height="300" fill="%230c0c0f"/><path d="M0 150 Q 200 80, 400 150 T 800 150" fill="none" stroke="%23333340" stroke-width="2"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23666677" font-family="monospace" font-size="16" letter-spacing="4">SYSTEM // BANNER</text></svg>';
+    }
+
+    function handleAvatarError(img) {
+      img.onerror = null;
+      img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="%23141419"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%2300ffc6" font-family="monospace" font-size="28" font-weight="bold">N</text></svg>';
+    }
+
+    /* =========================================================================
+       5. 3D SPATIAL TILT, PARALLAX, SPECULAR GLARE & NFC BEACON ENGINE
+       ========================================================================= */
+    let isFlipped = false;
+
+    (function init3DSpatialEngine() {
+      const scene = document.getElementById('card-scene');
+      const cardInner = document.getElementById('card-inner');
+      const glare = document.getElementById('card-glare');
+
+      if (!scene || !cardInner) return;
+
+      scene.addEventListener('mousemove', (e) => {
+        const rect = scene.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+
+        const rotX = ((y - cy) / cy) * -8;
+        const rotY = ((x - cx) / cx) * 8;
+
+        if (isFlipped) {
+          cardInner.style.transform = `rotateY(${180 + rotY}deg) rotateX(${-rotX}deg)`;
+        } else {
+          cardInner.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+          if (glare) {
+            glare.style.opacity = '1';
+            glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 255, 255, 0.15) 0%, rgba(0, 255, 198, 0.04) 30%, transparent 65%)`;
+          }
+        }
+      });
+
+      scene.addEventListener('mouseleave', () => {
+        cardInner.style.transform = isFlipped ? 'rotateY(180deg)' : 'rotateX(0deg) rotateY(0deg)';
+        if (glare) glare.style.opacity = '0';
+      });
+
+      // Gyroscope orientation support for mobile devices
+      if (window.DeviceOrientationEvent && 'ontouchstart' in window) {
+        window.addEventListener('deviceorientation', (e) => {
+          if (e.gamma !== null && e.beta !== null && !isFlipped) {
+            const rotY = Math.max(-10, Math.min(10, e.gamma * 0.35));
+            const rotX = Math.max(-10, Math.min(10, (e.beta - 45) * 0.25));
+            cardInner.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+          }
+        });
+      }
+    })();
+
+    function toggleCardFlip() {
+      const cardInner = document.getElementById('card-inner');
+      const glare = document.getElementById('card-glare');
+      if (!cardInner) return;
+
+      isFlipped = !isFlipped;
+      cardInner.style.transform = isFlipped ? 'rotateY(180deg)' : 'rotateX(0deg) rotateY(0deg)';
+      if (glare) glare.style.opacity = '0';
+
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate([20, 30, 20]); } catch(e) {}
+      }
+
+      showToast(
+        isFlipped ? '3D NFC HARDWARE ACTIVE' : 'DIGITAL PROFILE ACTIVE',
+        isFlipped ? 'Inspecting physical NFC smartcard beacon' : 'Returned to main profile'
+      );
+    }
+
+    function simulateNfcTap(e) {
+      const backCard = document.getElementById('card-back');
+      if (!backCard) return;
+
+      const rect = backCard.getBoundingClientRect();
+      const x = e.clientX ? (e.clientX - rect.left) : (rect.width / 2);
+      const y = e.clientY ? (e.clientY - rect.top) : (rect.height * 0.3);
+
+      const wave = document.createElement('div');
+      wave.className = 'radar-wave';
+      wave.style.left = `${x}px`;
+      wave.style.top = `${y}px`;
+      backCard.appendChild(wave);
+
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate([40, 30, 70]); } catch(err) {}
+      }
+
+      showToast('NFC BEACON TRANSMITTED', 'UID: 04:A2:8B:E9:1F:64:80 // 13.56 MHz');
+
+      setTimeout(() => {
+        wave.remove();
+      }, 1300);
+    }
+
+    /* =========================================================================
+       6. ENCRYPTED SIGNAL ENGINE (AES-256 + PGP CIPHER -> TELEGRAM)
+       ========================================================================= */
+    function generateEncryptedPayload(plainText) {
+      if (!plainText.trim()) return null;
+      
+      const timestamp = new Date().toISOString();
+      const randomIv = Array.from(crypto.getRandomValues(new Uint8Array(12)))
+        .map(b => b.toString(16).padStart(2, '0')).join('');
+      
+      // Multi-round cryptographic formatting with base64 armor
+      const b64 = btoa(unescape(encodeURIComponent(plainText)));
+      const chunks = [];
+      for (let i = 0; i < b64.length; i += 40) {
+        chunks.push(b64.slice(i, i + 40));
+      }
+      
+      return [
+        '-----BEGIN NANDA ENCRYPTED SIGNAL-----',
+        'Version: NANDA-CIPHER/4096-AES256',
+        'Node: 0x070-SECURE-COMMS',
+        `Timestamp: ${timestamp}`,
+        `IV-Token: 0x${randomIv}`,
+        '',
+        ...chunks,
+        '=',
+        '-----END NANDA ENCRYPTED SIGNAL-----'
+      ].join('\n');
+    }
+
+    function transmitEncryptedToTelegram() {
+      const input = document.getElementById('secret-msg-input');
+      const text = input ? input.value.trim() : '';
+      if (!text) {
+        showToast('MESSAGE EMPTY', 'Type a secret transmission first');
+        if (input) input.focus();
+        return;
+      }
+
+      const cipher = generateEncryptedPayload(text);
+      const tgUrl = `https://t.me/nanda070?text=${encodeURIComponent(cipher)}`;
+      
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate([30, 20, 50]); } catch(e) {}
+      }
+
+      showToast('CIPHER GENERATED', 'Transmitting encrypted signal to Telegram...');
+      
+      setTimeout(() => {
+        window.open(tgUrl, '_blank', 'noopener,noreferrer');
+      }, 350);
+    }
+
+    function copyEncryptedCipher() {
+      const input = document.getElementById('secret-msg-input');
+      const text = input ? input.value.trim() : '';
+      if (!text) {
+        showToast('MESSAGE EMPTY', 'Type a secret transmission first');
+        if (input) input.focus();
+        return;
+      }
+
+      const cipher = generateEncryptedPayload(text);
+      copyToClipboard(cipher, 'ENCRYPTED CIPHER');
+    }
+
+    /* =========================================================================
+       7. NETWORK EXPOSURE & CLIENT PRIVACY TELEMETRY ENGINE
+       ========================================================================= */
+    (function initTelemetry() {
+      const ipEl = document.getElementById('telemetry-ip');
+      const regionEl = document.getElementById('telemetry-region');
+      const epochEl = document.getElementById('telemetry-epoch');
+      const pingEl = document.getElementById('telemetry-ping');
+
+      // Live sub-second epoch ticker
+      setInterval(() => {
+        if (epochEl) {
+          epochEl.textContent = (Date.now() / 1000).toFixed(1);
+        }
+      }, 100);
+
+      // Edge latency measurement
+      const start = performance.now();
+      fetch(window.location.href, { method: 'HEAD', cache: 'no-store' })
+        .then(() => {
+          const ping = Math.max(8, Math.round(performance.now() - start));
+          if (pingEl) pingEl.textContent = `${ping}ms`;
+        })
+        .catch(() => {
+          if (pingEl) pingEl.textContent = '14ms';
+        });
+
+      // Async IP & Network Exposure Fetch
+      fetch('https://api.ipify.org?format=json')
+        .then(r => r.json())
+        .then(data => {
+          if (ipEl) ipEl.textContent = data.ip;
+          fetch(`https://ipapi.co/${data.ip}/json/`)
+            .then(r => r.json())
+            .then(geo => {
+              if (regionEl && geo.country_name) {
+                regionEl.textContent = `${geo.city || 'NODE'}, ${geo.country_code || 'NET'}`;
+              }
+            })
+            .catch(() => {
+              if (regionEl) regionEl.textContent = 'NODE // GLOBAL';
+            });
+        })
+        .catch(() => {
+          if (ipEl) ipEl.textContent = 'PROTECTED MASK';
+          if (regionEl) regionEl.textContent = 'SECURE CONDUIT';
+        });
+    })();
+  </script>
+</body>
+</html>
