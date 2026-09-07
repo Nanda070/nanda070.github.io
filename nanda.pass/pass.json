@@ -1,0 +1,126 @@
+{
+  "formatVersion": 1,
+  "passTypeIdentifier": "pass.com.nanda070.profile",
+  "serialNumber": "NANDA-NODE-0x070-2026",
+  "teamIdentifier": "YOUR_TEAM_ID",
+  "webServiceURL": "https://nanda070.github.io/",
+  "authenticationToken": "nanda070securetoken2026x",
+
+  "organizationName": "NANDA // NODE 0x070",
+  "description": "NANDA Digital Identity Card — System Architect",
+
+  "foregroundColor": "rgb(255, 255, 255)",
+  "backgroundColor": "rgb(5, 5, 5)",
+  "labelColor": "rgb(100, 200, 180)",
+
+  "logoText": "NANDA",
+
+  "generic": {
+    "primaryFields": [
+      {
+        "key": "name",
+        "label": "IDENTITY",
+        "value": "NANDA",
+        "textAlignment": "PKTextAlignmentLeft"
+      }
+    ],
+    "secondaryFields": [
+      {
+        "key": "role",
+        "label": "ROLE",
+        "value": "System Architect // Full-Stack",
+        "textAlignment": "PKTextAlignmentLeft"
+      },
+      {
+        "key": "node",
+        "label": "NODE",
+        "value": "0x070",
+        "textAlignment": "PKTextAlignmentRight"
+      }
+    ],
+    "auxiliaryFields": [
+      {
+        "key": "phone_hu",
+        "label": "PHONE HU",
+        "value": "+36-30-406-2072",
+        "textAlignment": "PKTextAlignmentLeft",
+        "dataDetectorTypes": ["PKDataDetectorTypePhoneNumber"]
+      },
+      {
+        "key": "phone_az",
+        "label": "PHONE AZ",
+        "value": "+994-10-399-0299",
+        "textAlignment": "PKTextAlignmentRight",
+        "dataDetectorTypes": ["PKDataDetectorTypePhoneNumber"]
+      }
+    ],
+    "backFields": [
+      {
+        "key": "slogan",
+        "label": "SIGNAL",
+        "value": "PRIVACY IS A RIGHT NOT A PRIVILEGE"
+      },
+      {
+        "key": "email_primary",
+        "label": "PRIMARY EMAIL",
+        "value": "adnan.huseynli1@gmail.com",
+        "dataDetectorTypes": ["PKDataDetectorTypeEmail"]
+      },
+      {
+        "key": "email_secondary",
+        "label": "SECONDARY EMAIL",
+        "value": "turkapahf@gmail.com",
+        "dataDetectorTypes": ["PKDataDetectorTypeEmail"]
+      },
+      {
+        "key": "telegram",
+        "label": "TELEGRAM",
+        "value": "https://t.me/nanda070",
+        "dataDetectorTypes": ["PKDataDetectorTypeLink"]
+      },
+      {
+        "key": "github",
+        "label": "GITHUB",
+        "value": "https://github.com/nanda070",
+        "dataDetectorTypes": ["PKDataDetectorTypeLink"]
+      },
+      {
+        "key": "website",
+        "label": "PORTAL",
+        "value": "https://Chetmedia.com",
+        "dataDetectorTypes": ["PKDataDetectorTypeLink"]
+      },
+      {
+        "key": "discord",
+        "label": "DISCORD",
+        "value": "nandak070"
+      },
+      {
+        "key": "pgp",
+        "label": "PGP KEY",
+        "value": "4096R/NANDA"
+      },
+      {
+        "key": "copyright",
+        "label": "VERIFIED NODE",
+        "value": "© 2026 NANDA // SECURE ENCRYPTED NODE // VERIFIED"
+      }
+    ]
+  },
+
+  "barcode": {
+    "message": "https://nanda070.github.io/",
+    "format": "PKBarcodeFormatQR",
+    "messageEncoding": "iso-8859-1",
+    "altText": "Scan to open NANDA Digital Profile"
+  },
+
+  "barcodes": [
+    {
+      "message": "https://nanda070.github.io/",
+      "format": "PKBarcodeFormatQR",
+      "messageEncoding": "iso-8859-1",
+      "altText": "Scan to open NANDA Digital Profile"
+    }
+  ]
+}
